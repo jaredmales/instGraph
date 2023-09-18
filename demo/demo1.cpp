@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "../instGraph.hpp"
+#include "../src/instGraph.hpp"
 
 
 int main()
