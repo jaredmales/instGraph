@@ -1,0 +1,47 @@
+[[nodes]]
+    name="source"
+    [[nodes.outputs]]
+        name="out"
+        beam="source2fwtelsim"
+
+[[nodes]]
+    name="fwtelsim"
+    [[nodes.inputs]]
+        name="in"
+        beam="source2fwtelsim"
+        outputLinks=["out"]
+    [[nodes.outputs]]
+        name="out"
+        beam="fwtelsim2pickoff"
+
+[[nodes]]
+    name="telescope"
+    [[nodes.outputs]]
+        name="out"
+        beam="telescope2pickoff"
+
+[[nodes]]
+    name="pickoff"
+    [[nodes.inputs]]
+        name="lab"
+        beam="fwtelsim2pickoff"
+        outputLinks=["out"]
+    [[nodes.inputs]]
+        name="tel"
+        beam="telescope2pickoff"
+        outputLinks=["out"]
+    [[nodes.outputs]]
+        name="out"
+        beam="pickoff2stagek"
+
+[[nodes]]
+    name="stagek"
+    [[nodes.inputs]]
+        name="in"
+        beam="pickoff2stagek"
+        outputLinks=["out"]
+    [[nodes.outputs]]
+        name="out"
+        beam="stagek2ttmpupil"
+
+
