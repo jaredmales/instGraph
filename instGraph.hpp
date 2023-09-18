@@ -16,6 +16,8 @@ namespace v3
 
 namespace ingr
 {
+
+/// A class to hold an instrument graph.
 class instGraph
 {
 
@@ -26,12 +28,15 @@ public:
 
 protected:
 
+    /// The nodes of this graph
     nodeMapT m_nodes;
 
+    /// The beams of this graph
     beamMapT m_beams;
 
 public:
 
+    /// Default c'tor
     instGraph();
 
     const nodeMapT & nodes();
