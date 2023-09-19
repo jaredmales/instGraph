@@ -10,9 +10,15 @@
 namespace ingr
 {
 
-/// A class to represent a node
-/** A node contains inputs and outputs (\ref instIOPUt) which connect
+/** A node contains inputs and outputs (\ref puts) which connect
   * it to other nodes via beams (\ref instBeam).
+  * 
+  * \addtogroup nodes
+  */
+
+/// A class to represent a node
+/** 
+  * \ingroup nodes
   */
 struct instNode
 {

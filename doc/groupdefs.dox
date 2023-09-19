@@ -1,0 +1,28 @@
+//-------- the top level groups
+/** \defgroup explainer Instrument Graph
+  * Explanation of the concepts.
+  */
+
+  
+/** \defgroup nodes Nodes
+  * Description of nodes and inputs and outputs
+  */
+
+
+/** \defgroup beams Beams
+  * Description of how light (and other quantities) propagate via beams.
+  */
+
+/** \defgroup basic_types The Basic Types In An Instrument Graph
+  * 
+  */
+
+/* --------------------------  Nodes ------------------------------------------------ */
+
+/** \defgroup puts IOPuts: node inputs and outputs 
+  * Description of inputs to and outputs from nodes
+  *
+  * \ingroup nodes
+  */
+
+  

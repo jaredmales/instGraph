@@ -1,3 +1,10 @@
+/** \file 
+  *
+  * \brief Definitions of basic types
+  * 
+  * Also includes utilities for string and character representation of values.
+  */
+
 #ifndef ingr_basicTypes_hpp
 #define ingr_basicTypes_hpp
 
@@ -6,22 +13,25 @@
 namespace ingr
 {
 
-/** \name basic_types The Basic Types In An Instrument Graph
-  * @{
- */
 
 /// The possible directions of an IOPut
+/** \ingroup basic_types
+  */ 
 enum class ioDir { input,  ///< an input
                    output  ///< an output
                  };
 
 /// The possible states of an IOPut
+/** \ingroup basic_types
+  */
 enum class putState { off,     ///< The put is off
                       waiting, ///< The put would be on, but is waiting for something upstream
                       on       ///< The put is on
                     };
                
 /// The possible types of an IOPut 
+/** \ingroup basic_types
+  */
 enum class putType { light,        ///< an input/output for light
                      data,         ///< an input/output for data
                      power,        ///< an input/output for electrical power
@@ -29,12 +39,15 @@ enum class putType { light,        ///< an input/output for light
                    };
 
 /// The possible states of a beam
+/** \ingroup basic_types
+  */
 enum class beamState { off,          ///< The beam is off
                        intermediate, ///< The beam is intermediate.  This mans the input is on, but the output is off.
                        on            ///< The beam is on
                      };
 
-/** \name state_string String Representations of Types and States
+/** \defgroup state_string String Representations of Types and States
+  * \ingroup basic_types
   * @{ 
   */
 

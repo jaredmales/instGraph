@@ -13,7 +13,6 @@ namespace ingr
 struct instBeam;
 struct instNode;
 
-/// Class to represent an input or output from a node
 /** We refer to inputs and outpus generically as an "IOPut" or a "put". 
   * An IOPut can either be an ioDir::input or ioDir::output (the "direction") and is
   * connected to one \ref instBeam.  The state of a beam's two IOPuts is used
@@ -27,6 +26,15 @@ struct instNode;
   * 
   * An input can be linked to one or more outputs, such that a change in the state of the input
   * causes the state of the liniked output to change.
+  * 
+  * \addtogroup puts
+  */  
+
+ 
+/// Class to represent an input or output from a node
+/** 
+  * 
+  * \ingroup puts
   */
 class instIOPut
 {

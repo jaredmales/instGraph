@@ -13,6 +13,8 @@ struct instNode;
 /// Class to represent a propagation path
 /** An `instBeam` connects an output of one node to an input of a different node.  It can have a state of off, 
   * intermediate, or on, which depends on the states of the input and output.
+  * 
+  * \ingroup beams
   */ 
 class instBeam
 {
