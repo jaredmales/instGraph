@@ -22,9 +22,9 @@ class instGraph
 {
 
 public:
-    typedef std::map<std::string, ingr::instNode> nodeMapT;
+    typedef std::map<std::string, ingr::instNode *> nodeMapT;
 
-    typedef std::map<std::string, ingr::instBeam> beamMapT;
+    typedef std::map<std::string, ingr::instBeam *> beamMapT;
 
 protected:
 
@@ -39,13 +39,15 @@ public:
     /// Default c'tor
     instGraph();
 
+    ~instGraph();
+
     const nodeMapT & nodes();
 
-    instNode & node( const std::string & key );
+    instNode * node( const std::string & key );
 
     const beamMapT & beams();
 
-    instBeam & beam( const std::string & key );
+    instBeam * beam( const std::string & key );
    
     int constructFromTOMLTable( toml::v3::table & tbl );
 

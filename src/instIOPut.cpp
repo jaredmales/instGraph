@@ -131,7 +131,12 @@ void instIOPut::state( putState ns,
     {
         for(auto && oit : m_outputLinks)
         {
-            m_node->output(oit).state(ns);
+            if(m_node->output(oit) == nullptr)
+            {
+                throw std::logic_error("instIOPut::state: nullptr in outputLinks");
+            }
+
+            m_node->output(oit)->state(ns);
         }
     }
 

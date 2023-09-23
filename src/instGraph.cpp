@@ -18,12 +18,25 @@ instGraph::instGraph()
 {
 }
 
+instGraph::~instGraph()
+{
+    for(auto && beam : m_beams)
+    {
+        delete beam.second;
+    }
+
+    for(auto && node : m_nodes)
+    {
+        delete node.second;
+    }
+}
+
 const instGraph::nodeMapT & instGraph::nodes()
 {
     return m_nodes;
 }
 
-instNode & instGraph::node( const std::string & key )
+instNode * instGraph::node( const std::string & key )
 {
     if(m_nodes.count(key) != 1)
     {
@@ -46,7 +59,7 @@ const instGraph::beamMapT & instGraph::beams()
     return m_beams;
 }
 
-instBeam & instGraph::beam( const std::string & key )
+instBeam * instGraph::beam( const std::string & key )
 {
     if(m_beams.count(key) != 1)
     {
@@ -90,9 +103,10 @@ int instGraph::constructFromTOMLTable( toml::table & tbl)
         std::cout << "Creating node: " << newname << "\n";
   
         BREADCRUMB
-  
-        std::pair<nodeMapT::iterator, bool> nodeRes = m_nodes.emplace(newname, instNode(newname));
-        ingr::instNode & newNode = nodeRes.first->second;
+    
+        instNode * newNode = new instNode(newname);
+
+        std::pair<nodeMapT::iterator, bool> nodeRes = m_nodes.emplace(newname, newNode);
   
         BREADCRUMB
   
@@ -126,27 +140,34 @@ int instGraph::constructFromTOMLTable( toml::table & tbl)
               //First handle the beam, creating if needed or updating otherwise
               std::string beamName = output.as_table()->at_path("beam").as_string()->get();
   
-              std::pair<beamMapT::iterator, bool> beamRes = m_beams.emplace(beamName, ingr::instBeam());
-              ingr::instBeam & newBeam = beamRes.first->second;
+              ingr::instBeam * newBeam = nullptr;
+              
+                if(m_beams.count(beamName) == 0)
+                {
+                    newBeam = new instBeam;
+                    std::pair<beamMapT::iterator, bool> beamRes = m_beams.emplace(beamName, newBeam);
+                    newBeam->name(beamName);
+                    std::cerr << "\tCreated beam " << beamName << "\n";
+                }
+                else 
+                {
+                    newBeam = m_beams[beamName];
+              
+                    if(newBeam != nullptr)
+                    {
+                        if(newBeam->source() != nullptr)
+                        {
+                            ///\todo test me
+                            std::cerr << "\tBeam " << beamName << "(" << output.as_table()->at_path("beam").node()->source().begin << ") already has a source.\n";
+                            return -1;                  
+                        
+                        }
+                    }
   
-              if(beamRes.second) //Create Beam
-              {
-                 std::cerr << "\tCreated beam " << beamName << "\n";
-                 newBeam.name(beamName);
-              }
-              else //Update beam, checking if it was already assigned a source.
-              {
-                 if(newBeam.source() != nullptr)
-                 {
-                    ///\todo test me
-                    std::cerr << "\tBeam " << beamName << "(" << output.as_table()->at_path("beam").node()->source().begin << ") already has a source.\n";
-                    return -1;                  
-                 }
+                    std::cerr << "\tUpdating beam " << beamName << "\n";
+                }
   
-                 std::cerr << "\tUpdating beam " << beamName << "\n";
-              }
-  
-              BREADCRUMB
+                BREADCRUMB
   
               //Now handle the output
               std::string putName = output.as_table()->at_path("name").as_string()->get();
@@ -154,7 +175,8 @@ int instGraph::constructFromTOMLTable( toml::table & tbl)
               BREADCRUMB
   
               //Here we add the output
-              newNode.addIOPut({&newNode, ingr::ioDir::output, putName, ingr::putType::light, &newBeam});
+              instIOPut * newPut = new instIOPut({newNode, ingr::ioDir::output, putName, ingr::putType::light, newBeam});
+              newNode->addIOPut(newPut);
            }
         }
   
@@ -189,24 +211,29 @@ int instGraph::constructFromTOMLTable( toml::table & tbl)
                 //First handle the beam, creating if needed or updating otherwise
                 std::string beamName = input.as_table()->at_path("beam").as_string()->get();
     
-                std::pair<beamMapT::iterator, bool> beamRes = m_beams.emplace(beamName, ingr::instBeam());
-                ingr::instBeam & newBeam = beamRes.first->second;
-    
-                if(beamRes.second) //Create Beam
+                instBeam * newBeam = nullptr; 
+                
+                if(m_beams.count(beamName) == 0)
                 {
-                   std::cerr << "\tCreated beam " << beamName << "\n";
-                   newBeam.name(beamName);
+                    newBeam = new instBeam;
+                    std::pair<beamMapT::iterator, bool> beamRes = m_beams.emplace(beamName, newBeam);
+                    std::cerr << "\tCreated beam " << beamName << "\n";
+                    newBeam->name(beamName);
                 }
-                else //Update beam, checking if it was already assigned a source.
+                else 
                 {
-                   if(newBeam.dest() != nullptr)
-                   {
-                      ///\todo test me
-                      std::cerr << "Beam " << beamName << "(" << input.as_table()->at_path("beam").node()->source().begin << ") already has a dest.\n";
-                      return -1;                  
-                   }
+                    newBeam = m_beams[beamName];
+                    if(newBeam != nullptr)
+                    {
+                        if(newBeam->dest() != nullptr)
+                        {
+                            ///\todo test me
+                            std::cerr << "Beam " << beamName << "(" << input.as_table()->at_path("beam").node()->source().begin << ") already has a dest.\n";
+                            return -1;                  
+                        }
+                    }
     
-                   std::cerr << "\tUpdating beam " << beamName << "\n";
+                    std::cerr << "\tUpdating beam " << beamName << "\n";
                 }
     
                 BREADCRUMB
@@ -216,7 +243,8 @@ int instGraph::constructFromTOMLTable( toml::table & tbl)
     
                 BREADCRUMB
     
-                std::string nnKey = newNode.addIOPut({&newNode, ingr::ioDir::input, putName, ingr::putType::light, &newBeam});
+                instIOPut * newPut = new instIOPut({newNode, ingr::ioDir::input, putName, ingr::putType::light, newBeam});
+                std::string nnKey = newNode->addIOPut(newPut);
     
                 if(input.as_table()->at_path("outputLinks").is_array())
                 {
@@ -227,7 +255,7 @@ int instGraph::constructFromTOMLTable( toml::table & tbl)
                         std::string olink = input.as_table()->at_path("outputLinks").as_array()->at(n).as_string()->get();
                         std::cerr << "\t\t    " << olink << "\n";
 
-                        newNode.input(nnKey).outputLink(olink);
+                        newNode->input(nnKey)->outputLink(olink);
                     }
                 }
                  

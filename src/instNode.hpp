@@ -24,7 +24,7 @@ struct instNode
 {
 
 public:
-   typedef std::unordered_map<std::string, instIOPut> ioputMapT;
+   typedef std::unordered_map<std::string, instIOPut *> ioputMapT;
 
 protected:
 
@@ -41,6 +41,8 @@ public:
 
     /// Copy c'tor
     instNode( const instNode & in /**< [in] the instance to copy*/ );
+
+    ~instNode();
 
     /// Constructor to set the name
     explicit instNode(const std::string & name /**< [in] the unique name of this node*/) : m_name{name} {}
@@ -61,7 +63,7 @@ public:
     std::string key();
  
     /// Add an input or output to this node
-    std::string addIOPut( const instIOPut & ip /**< [in] the input or output to add*/);
+    std::string addIOPut( instIOPut * ip /**< [in] the input or output to add*/);
  
     /// Get a reference to the input map
     /**
@@ -73,7 +75,7 @@ public:
     /**
       * \returns a reference to the input with the given name
       */ 
-    instIOPut & input( const std::string & key /**< [in] the name of the input*/);
+    instIOPut * input( const std::string & key /**< [in] the name of the input*/);
  
     /// Get a reference to the output map
     /**
@@ -85,7 +87,7 @@ public:
     /**
       * \returns a reference to the output with the given name
       */
-    instIOPut & output( const std::string & key /**< [in] the name of the output*/);
+    instIOPut * output( const std::string & key /**< [in] the name of the output*/);
  
     /// Handle a state change by one of the nodes
     /**
