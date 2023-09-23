@@ -6,6 +6,20 @@ A way to represent an astronomical instrument's logical state.
 
 to-do
 
+## Building 
+
+Building the instGraph library follows the usual cmake process:
+
+```bash
+mkdir _build
+cd _build
+cmake ..
+make
+sudo make install
+```
+
+Note that you do not need to build the library to run the demo.
+
 ## Demonstration
 
 See [demo 1](doc/demo1.md)
