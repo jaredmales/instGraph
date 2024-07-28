@@ -41,7 +41,7 @@ Once the graph is loaded, then a series of steps are executed showing how change
 
 Each step is illustrated with a diagram of the instrument graph.  The legend for the diagrams is provided here.
 
-<img src="images/demo1_legend.png" alt="demo 1 legend" width="400"/>
+![demo 1 legend](images/demo1_legend.png "Legend.")
 
 
 ### Step 0:
