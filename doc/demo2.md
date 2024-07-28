@@ -55,7 +55,7 @@ Each step is illustrated with a diagram of the instrument graph.  The legend for
 
 ### Step 0:
 
-For Step 0 all the puts are in the default state of off.  The beams are therefor off.  The demo outputs
+For Step 0 all the puts are in the default state of off.  The beams are therefore off.  The demo outputs
 
 ```
   source2fwtelsim state   = off
