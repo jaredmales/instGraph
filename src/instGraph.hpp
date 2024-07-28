@@ -7,14 +7,6 @@
 #include "instNode.hpp"
 #include "instBeam.hpp"
 
-//forward decl
-namespace toml
-{
-namespace v3
-{
-    class table;
-}
-}
 
 namespace ingr
 {
@@ -55,9 +47,7 @@ public:
 
     instBeam * beam( const std::string & key );
    
-    int constructFromTOMLTable( toml::v3::table & tbl );
-
-    int constructFromTOMLFile( const std::string & fname );
+    
 
 
 }; //class instGraph

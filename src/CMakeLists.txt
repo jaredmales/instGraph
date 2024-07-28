@@ -1,7 +1,7 @@
 
 
 # list of source files
-set(libsrc instGraph.cpp instGraphXML.cpp instNode.cpp instIOPut.cpp instBeam.cpp)
+set(libsrc instGraph.cpp instGraphTOML.cpp instGraphXML.cpp instNode.cpp instIOPut.cpp instBeam.cpp)
 
 # this is the "object library" target: compiles the sources only once
 add_library(objlib OBJECT ${libsrc})

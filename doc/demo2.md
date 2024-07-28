@@ -10,7 +10,7 @@ Here we specify the graph using a `drawio` XML file.  This will soon enable GUI 
 The demo can be compiled from inside the demo directory with
 
 ```
-$ g++ -o demo2 demo2.cpp ../src/*.cpp ../src/pugixml/pugixml.cpp
+$ g++ -o demo2 demo2.cpp ../src/*.cpp 
 ```
 
 ## Running

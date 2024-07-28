@@ -2,18 +2,17 @@
 
 #include <iostream>
 
-#include "../src/instGraph.hpp"
-
+#include "../src/instGraphTOML.hpp"
 
 int main()
 {
-    ingr::instGraph igr;
+    ingr::instGraphTOML igr;
 
     std::cerr << "######################################\n";
     std::cerr << " building graph\n";
     std::cerr << "######################################\n\n";
 
-    igr.constructFromTOMLFile("demo1.toml");
+    igr.loadTOMLFile("demo1.toml");
  
     std::cerr << "######################################\n";
     std::cerr << " confirming graph\n";
@@ -25,14 +24,24 @@ int main()
     {
         std::cerr << "  node: " << it->second->name() << "\n";
         std::cerr << "    inputs: " << it->second->inputs().size() << "\n";
-        for(auto iit = it->second->inputs().begin(); iit != it->second->inputs().end(); ++iit)
+        for(auto&& iit : it->second->inputs())
         {
-            std::cerr << "      " << iit->second->name() << " (" << iit->first << ")\n";
+            std::cerr << "      " << iit.second->name() << " (" << ioDir2String(iit.second->io()) << ") <-- ";
+            if(iit.second->beamValid())
+            {
+                std::cerr << iit.second->beam()->name();
+            }
+            std::cerr << "\n";
         }
         std::cerr << "    outputs: " << it->second->outputs().size() << "\n";
         for(auto&& oit : it->second->outputs())
         {
-            std::cerr << "      " << oit.second->name() << " (" << oit.first << ")\n";
+            std::cerr << "      " << oit.second->name() << " (" << ioDir2String(oit.second->io()) << ") --> ";
+            if(oit.second->beamValid()) 
+            {
+                std::cerr << oit.second->beam()->name();
+            }
+            std::cerr << "\n";
         }
         std::cerr << "\n";
     }

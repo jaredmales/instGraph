@@ -33,12 +33,12 @@ int main()
     {
         std::cerr << "  node: " << it->second->name() << "\n";
         std::cerr << "    inputs: " << it->second->inputs().size() << "\n";
-        for(auto iit = it->second->inputs().begin(); iit != it->second->inputs().end(); ++iit)
+        for(auto&& iit : it->second->inputs())
         {
-            std::cerr << "      " << iit->second->name() << " (" << ioDir2String(iit->second->io()) << ") <-- ";
-            if(iit->second->beamValid())
+            std::cerr << "      " << iit.second->name() << " (" << ioDir2String(iit.second->io()) << ") <-- ";
+            if(iit.second->beamValid())
             {
-                std::cerr << iit->second->beam()->name();
+                std::cerr << iit.second->beam()->name();
             }
             std::cerr << "\n";
         }
