@@ -1,3 +1,5 @@
+#ifndef instGraph_hpp
+#define instGraph_hpp
 
 #include <map>
 #include <string>
@@ -43,9 +45,13 @@ public:
 
     const nodeMapT & nodes();
 
+    const bool nodeValid( const std::string & key ) const;
+
     instNode * node( const std::string & key );
 
     const beamMapT & beams();
+
+    const bool beamValid( const std::string & key ) const;
 
     instBeam * beam( const std::string & key );
    
@@ -57,3 +63,6 @@ public:
 }; //class instGraph
 
 }; //namespace ingr
+
+
+#endif //instGraph_hpp

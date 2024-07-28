@@ -1,7 +1,7 @@
 
 
 # list of source files
-set(libsrc instGraph.cpp instNode.cpp instIOPut.cpp instBeam.cpp )
+set(libsrc instGraph.cpp instGraphXML.cpp instNode.cpp instIOPut.cpp instBeam.cpp)
 
 # this is the "object library" target: compiles the sources only once
 add_library(objlib OBJECT ${libsrc})
@@ -25,5 +25,5 @@ SET_TARGET_PROPERTIES(instGraph-static PROPERTIES OUTPUT_NAME instGraph CLEAN_DI
 
 install (TARGETS instGraph-shared DESTINATION lib)
 install (TARGETS instGraph-static DESTINATION lib)
-install (FILES instGraph.hpp instNode.hpp instIOPut.hpp instBeam.hpp basicTypes.hpp DESTINATION include/instGraph)
+install (FILES instGraph.hpp instGraphXML.hpp instNode.hpp instIOPut.hpp instBeam.hpp basicTypes.hpp DESTINATION include/instGraph)
 

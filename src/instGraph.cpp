@@ -36,6 +36,17 @@ const instGraph::nodeMapT & instGraph::nodes()
     return m_nodes;
 }
 
+const bool instGraph::nodeValid( const std::string & key) const 
+{
+    if(m_nodes.count(key) != 1)
+    {
+        return false;
+    }
+    
+    return(m_nodes.at(key) != nullptr);
+
+}
+
 instNode * instGraph::node( const std::string & key )
 {
     if(m_nodes.count(key) != 1)
@@ -51,12 +62,28 @@ instNode * instGraph::node( const std::string & key )
         throw std::invalid_argument(msg);
     };
 
+    if(m_nodes[key] == nullptr)
+    {
+        throw std::out_of_range("instGraph::node() attempt to access m_nodes item pointer which is null");
+    }
+
     return m_nodes[key];
 }
 
 const instGraph::beamMapT & instGraph::beams()
 {
     return m_beams;
+}
+
+const bool instGraph::beamValid( const std::string & key) const 
+{
+    if(m_beams.count(key) != 1)
+    {
+        return false;
+    }
+    
+    return(m_beams.at(key) != nullptr);
+
 }
 
 instBeam * instGraph::beam( const std::string & key )
@@ -73,6 +100,11 @@ instBeam * instGraph::beam( const std::string & key )
 
         throw std::invalid_argument(msg);
     };
+
+    if(m_beams[key] == nullptr)
+    {
+        throw std::out_of_range("instNode::beam() attempt to access m_beams item pointer which is null");
+    }
 
     return m_beams[key];
 }

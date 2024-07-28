@@ -42,10 +42,12 @@ public:
     /// Copy c'tor
     instNode( const instNode & in /**< [in] the instance to copy*/ );
 
+    /// Destructor
     ~instNode();
 
     /// Constructor to set the name
-    explicit instNode(const std::string & name /**< [in] the unique name of this node*/) : m_name{name} {}
+    explicit instNode( const std::string & name ///< [in] the unique name of this node
+                     ) : m_name{name} {}
  
     /// Get the unique name of this node
     /**
@@ -71,9 +73,18 @@ public:
       */ 
     const ioputMapT & inputs() const;
  
+    /// Check if an input pointer is valid
+    /**
+      * \returns true if m_inputs contains an input identified by key and it is not nullptr
+      * \returns false otherwise 
+      */
+    const bool inputValid( const std::string & key /**< [in] the name of the input*/ ) const;
+
     /// Get an input by its key
     /**
       * \returns a reference to the input with the given name
+      * 
+      * \throws std::out_of_range if the pointer is null.  Call inputValid(key) first to check if the pointer is not null.
       */ 
     instIOPut * input( const std::string & key /**< [in] the name of the input*/);
  
@@ -83,9 +94,18 @@ public:
       */
     const ioputMapT & outputs() const;
  
+    /// Check if an output pointer is valid
+    /**
+      * \returns true if m_outputs contains an output identified by key and it is not nullptr
+      * \returns false otherwise 
+      */
+    const bool outputValid( const std::string & key /**< [in] the name of the output*/ ) const;
+
     /// Get an output by its key
     /**
       * \returns a reference to the output with the given name
+      * 
+      * \throws std::out_of_range if the pointer is null.  Call outputValid(key) first to check if the pointer is not null.
       */
     instIOPut * output( const std::string & key /**< [in] the name of the output*/);
  

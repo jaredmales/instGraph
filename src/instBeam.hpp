@@ -11,8 +11,9 @@ namespace ingr
 struct instNode;
 
 /// Class to represent a propagation path
-/** An `instBeam` connects an output of one node to an input of a different node.  It can have a state of off, 
-  * intermediate, or on, which depends on the states of the input and output.
+/** An `instBeam` connects an output of one node to an input of a different node.
+  * It can have a state of off, intermediate, or on, which depends on the 
+  * states of the input and output.
   * 
   * \ingroup beams
   */ 
@@ -26,7 +27,11 @@ protected:
    
     instIOPut *m_dest {nullptr}; ///< The output
 
-    beamState m_state; ///< The current state of the beam, calculated on a call to stateChange() from the states of the inputs.  Will have one of the values of beamState::off (default), beamState::intermediate, or beamState::on.
+    beamState m_state; /**< The current state of the beam, calculated on 
+                            a call to stateChange() from the states of the 
+                            inputs.  Will have one of the values of 
+                            beamState::off (default), beamState::intermediate, 
+                            or beamState::on. */
 
 public:
     /// Default c'tor
@@ -44,18 +49,36 @@ public:
     /// Set the name of the beam
     void name(const std::string & n /**< [in] the new name */ );
  
+    /// Check if source pointer is set 
+    /**
+      * \returns true if the pointer to the source is not null
+      * \returns false otherwise 
+      */
+    const bool sourceValid() const;
+
     /// Get the pointer to the input to the beam
     /**
       * \returns the pointer to the input to the beam 
+      * 
+      * \throws std::out_of_range if the pointer is null.  Call sourceValid() to check first.
       */
     instIOPut * source();
  
     /// Set the pointer to the input
     void source(instIOPut * inp /**<[in] the new input pointer */ );
  
+    /// Check if dest pointer is set 
+    /**
+      * \returns true if the pointer to the dest is not null
+      * \returns false otherwise 
+      */
+    const bool destValid() const;
+    
     /// Get the pointer to the output of the beam
     /**
       * \returns the pointer to the output of the beam 
+      * 
+      * \throws std::out_of_range if the pointer is null.  Call destValid() to check first.
       */
     instIOPut * dest();
  

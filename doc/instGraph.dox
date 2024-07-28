@@ -14,7 +14,7 @@
 # Values that contain spaces should be placed between quotes (\" \").
 
 #---------------------------------------------------------------------------
-# Project related configuration options
+# Project related conf../src/pugixml/pugixml.cppiguration options
 #---------------------------------------------------------------------------
 
 # This tag specifies the encoding used for all characters in the config file
@@ -792,7 +792,9 @@ WARN_LOGFILE           =
 
 INPUT                  = groupdefs.dox \
                          ../readme.md \
+                         ./mxGraph.md \
                          ./demo1.md \
+                         ./demo2.md \
                          ../src \
 #                         ../tests
 

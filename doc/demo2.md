@@ -1,17 +1,16 @@
 
-# Demo 1: TOML
+# Demo 2: drawio XML
 
 This demo illustrates the logic of the inputs to the MagAO-X instrument.  The source can be either the internal telescope simulator, starting at the node `source`, which is a laser, or the node `telescope` which represents the, well, telescope.
 
-Here we specify the graph using a TOML file.  This is a very basic interface, which does not provide an interface to a GUI (the below images
-were constructed manually for illustration purposes).  
+Here we specify the graph using a `drawio` XML file.  This will soon enable GUI updates.
 
 ## Building
 
 The demo can be compiled from inside the demo directory with
 
 ```
-$ g++ -o demo1 demo1.cpp ../src/*.cpp
+$ g++ -o demo2 demo2.cpp ../src/*.cpp ../src/pugixml/pugixml.cpp
 ```
 
 ## Running
@@ -19,7 +18,7 @@ $ g++ -o demo1 demo1.cpp ../src/*.cpp
 Run the demo with
 
 ```
-$ ./demo1
+$ ./demo2
 ```
 
 This loads the instrument graph specified in `demo1.toml`.  The program currently gives verbose output describing what it's doing to load and construct the graph, and then dumps a simplified representation of what was loaded.  The level of verbosity will be changeable in the future.

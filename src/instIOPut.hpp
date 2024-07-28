@@ -13,19 +13,21 @@ namespace ingr
 struct instBeam;
 struct instNode;
 
-/** We refer to inputs and outpus generically as an "IOPut" or a "put". 
+/** We refer to inputs and outputs generically as an "IOPut" or a "put". 
   * An IOPut can either be an ioDir::input or ioDir::output (the "direction") and is
   * connected to one \ref instBeam.  The state of a beam's two IOPuts is used
   * to calculate the state of the beam.
   * 
   * A put has a type from \ref putType.
   * 
-  * A put has a name which must be unique within it's parent node and it's direction (regardless of type).
-  * Note that in principle an input and an output within the same node could have the same name, but
-  * an input of putType::light and an input of putType::power must be given unique names.
+  * A put has a name which must be unique within it's parent node and it's direction 
+  * (regardless of type). Note that in principle an input and an output within the 
+  * same node could have the same name, but an input of putType::light and an input 
+  * of putType::power must be given unique names.
   * 
-  * An input can be linked to one or more outputs, such that a change in the state of the input
-  * causes the state of the liniked output to change.
+  * An input can be linked to one or more outputs, such that a change in the state 
+  * of the input causes the state of the linked output to change.  These are called
+  * "output links".
   * 
   * \addtogroup puts
   */  
@@ -51,12 +53,18 @@ protected:
     
     instBeam * m_beam {nullptr}; ///< The beam connected to this put.
     
-    putState m_state {putState::off}; ///< The current state of the put: putState::off (default), putState::waiting, or putState::on. 
+    /** The current state of the put: putState::off (default), putState::waiting, or 
+      * putState::on.
+      */ 
+    putState m_state {putState::off}; 
     
     std::string m_key; ///< The unique key to identify this ioput.
     
-    std::set<std::string> m_outputLinks; ///< List of outputs on the same node which are downstream of this input.  This are effectively internal beams. Used for inputs only.
-   
+    /** List of outputs on the same node which are downstream of this input.  
+      * This are effectively internal beams. Used for inputs only.
+      */
+    std::set<std::string> m_outputLinks; 
+
 public:
 
     /// Default c'tor
@@ -84,9 +92,18 @@ public:
                 instBeam * beam   ///< [in] the beam that connects to this input/output
               );
  
+    /// Check if node pointer is set 
+    /**
+      * \returns true if the pointer to parent node m_node is not null
+      * \returns false otherwise 
+      */
+    const bool nodeValid() const;
+
     /// Get the pointer to the parent node
     /**
       * \returns the pointer to the parent node m_node
+      * 
+      * \throws std::out_of_range if the pointer is null.  Call nodeValid() to check first.
       */
     instNode * node() const;
  
@@ -120,9 +137,18 @@ public:
     /// Set the type of this put
     void type( putType t /**< [in] the new type */ );
  
+    /// Check if beam pointer is set 
+    /**
+      * \returns true if the pointer to the beam is not null
+      * \returns false otherwise 
+      */
+    const bool beamValid() const;
+
     /// Get the pointer to the beam connected to this put
     /**
       * \returns the beam pointer m_beam
+      * 
+      * \throws std::out_of_range if the pointer is null.  Call beamValid() to check first.
       */
     instBeam * beam() const;
  
@@ -141,7 +167,8 @@ public:
       */
     void state( putState ns,        ///< [in] The new state, either putOn, putOff, or putWaiting
                 bool nobeam = false /**< [in] [optiona] If true then this only sets the state, 
-                                                        does not propagate to the beam.  Outputlinks are updated. */
+                                                        does not propagate to the beam.  Outputlinks 
+                                                        are updated. */
               );
  
     /// Get the unique key for this put

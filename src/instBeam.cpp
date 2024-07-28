@@ -28,9 +28,19 @@ void instBeam::name(const std::string & n)
    m_name = n;
 }
 
+const bool instBeam::sourceValid() const
+{
+    return (m_source != nullptr);
+}
+
 instIOPut * instBeam::source()
 {
-   return m_source;
+    if(m_source == nullptr)
+    {
+        throw std::out_of_range("instBeam::source() attempt to access m_source which is null");
+    }
+
+    return m_source;
 }
 
 void instBeam::source(instIOPut * inp)
@@ -38,9 +48,19 @@ void instBeam::source(instIOPut * inp)
    m_source = inp;
 }
 
+const bool instBeam::destValid() const
+{
+    return (m_dest != nullptr);
+}
+
 instIOPut * instBeam::dest()
 {
-   return m_dest;
+    if(m_dest == nullptr)
+    {
+        throw std::out_of_range("instBeam::dest() attempt to access m_dest which is null");
+    }
+
+    return m_dest;
 }
 
 void instBeam::dest(instIOPut * outp)
@@ -65,7 +85,8 @@ void instBeam::stateChange()
     //if m_source is null, then nothing else matters
     if( m_source == nullptr )
     {
-        if(m_state == beamState::off) return;
+        if(m_state == beamState::off) return; //not a state change
+
         m_state = beamState::off;
 
         if(m_dest)
@@ -75,20 +96,19 @@ void instBeam::stateChange()
                 m_dest->state(putState::waiting, true);
             }
         }
+
         return;
     }
 
-   //if m_dest is null, the beam can only be intermediate or off
-   if(m_dest == nullptr)
+    //if m_dest is null, the beam can only be intermediate or off
+    if(m_dest == nullptr)
     {
         if(m_source->state() == putState::on) 
         {
-            if(m_state == beamState::intermediate) return;
             m_state = beamState::intermediate;
         }
         else 
         {
-            if(m_state == beamState::off) return;
             m_state = beamState::off;
         }
       return;
@@ -106,7 +126,7 @@ void instBeam::stateChange()
         }
         return;
     }
-    if(m_source->state() == putState::on)
+    else if(m_source->state() == putState::on)
     {
         if( m_dest->state() == putState::on || m_dest->state() == putState::waiting) 
         {

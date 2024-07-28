@@ -50,8 +50,18 @@ void instIOPut::setup( instNode * node,
     makeKey();
 }
 
+const bool instIOPut::nodeValid() const
+{
+    return (m_node != nullptr);
+}
+
 instNode * instIOPut::node() const
 {
+    if(m_node == nullptr)
+    {
+        throw std::out_of_range("instIOPut::node(): attempt to access m_node pointer which is null");
+    }
+
     return m_node;
 }
 
@@ -65,6 +75,7 @@ ioDir instIOPut::io() const
 {
    return m_io;
 }
+
 void instIOPut::io(ioDir iot)
 {
    m_io = iot;
@@ -92,9 +103,19 @@ void instIOPut::type( putType t )
    makeKey();
 }
 
+const bool instIOPut::beamValid() const
+{
+    return (m_beam != nullptr);
+}
+
 instBeam * instIOPut::beam() const
 {
-   return m_beam;
+    if(m_beam == nullptr)
+    {
+        throw std::out_of_range("instIOPut::beam(): attempt to access m_beam pointer which is null");
+    }
+
+    return m_beam;
 }
 
 void instIOPut::beam( instBeam * b)
@@ -126,7 +147,7 @@ void instIOPut::state( putState ns,
 
     m_state = ns;
 
-    //If an input and it is linked, propagate to the linked outpus
+    //If an input and it is linked, propagate to the linked outputs
     if(m_io == ioDir::input && m_outputLinks.size() > 0 && m_node)
     {
         for(auto && oit : m_outputLinks)
@@ -164,6 +185,7 @@ void instIOPut::outputLink(const std::string & ol)
 
         throw std::logic_error(msg);
     }
+    
     m_outputLinks.insert(ol);
 }
 
@@ -182,17 +204,6 @@ void instIOPut::stateChange()
 void instIOPut::makeKey()
 {
     m_key = m_name;
-
-    /*if(m_node != nullptr) m_key = m_node->key();
-    m_key += '.';
-
-    m_key += ioDir2Char(m_io);
-    m_key += '.';
-
-    m_key += putType2Char(m_type);
-    m_key += '.';
-
-    m_key += m_name;*/
 }
 
 } //namespace instGraph

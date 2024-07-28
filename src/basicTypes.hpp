@@ -13,7 +13,6 @@
 namespace ingr
 {
 
-
 /// The possible directions of an IOPut
 /** \ingroup basic_types
   */ 
@@ -35,14 +34,15 @@ enum class putState { off,     ///< The put is off
 enum class putType { light,        ///< an input/output for light
                      data,         ///< an input/output for data
                      power,        ///< an input/output for electrical power
-                     mechanical    ///< an input/output for a mechanical connection
+                     mechanical,   ///< an input/output for a mechanical connection
+                     fluid         ///< an input/output for a fluid connection
                    };
 
 /// The possible states of a beam
 /** \ingroup basic_types
   */
 enum class beamState { off,          ///< The beam is off
-                       intermediate, ///< The beam is intermediate.  This mans the input is on, but the output is off.
+                       intermediate, ///< The beam is intermediate.  This means the input is on, but the output is off.
                        on            ///< The beam is on
                      };
 
@@ -99,6 +99,7 @@ std::string putType2String( putType type /**< [in] the IOPut type*/)
     else if(type == putType::data) return "data";
     else if(type == putType::power) return "power";
     else if(type == putType::mechanical) return "mechanical";
+    else if(type == putType::fluid) return "fluid";
     else return "unknown"; 
 }
 
@@ -113,6 +114,7 @@ char putType2Char( putType type /**< [in] the IOPut type*/)
     else if(type == putType::data) return 'd';
     else if(type == putType::power) return 'p';
     else if(type == putType::mechanical) return 'm';
+    else if(type == putType::fluid) return 'f';
     else return '?'; 
 }
 

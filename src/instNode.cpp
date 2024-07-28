@@ -53,7 +53,10 @@ std::string instNode::addIOPut( instIOPut * ip )
     if(ip->io() == ioDir::input ) 
     {
         std::cerr << "\tadding output: \"" << ip->name() << "\"\n";
-        if(ip->beam() != nullptr) std::cerr << "\t         beam: \"" << ip->beam()->name() << "\"\n";
+        if(ip->beamValid()) 
+        {
+            std::cerr << "\t         beam: \"" << ip->beam()->name() << "\"\n";
+        }
         else std::cerr << "\t         beam: <null> \n";
 
         std::pair<ioputMapT::iterator, bool> res = m_inputs.insert({ip->key(), ip});
@@ -68,7 +71,7 @@ std::string instNode::addIOPut( instIOPut * ip )
   
         instIOPut * newPut = res.first->second;
   
-        if(newPut->beam() != nullptr) 
+        if(newPut->beamValid()) 
         {
             newPut->beam()->dest(ip);
         }
@@ -79,7 +82,7 @@ std::string instNode::addIOPut( instIOPut * ip )
     else if(ip->io() == ioDir::output ) 
     {
         std::cerr << "\tadding output: \"" << ip->name() << "\"\n";
-        if(ip->beam() != nullptr) std::cerr << "\t         beam: \"" << ip->beam()->name() << "\"\n";
+        if(ip->beamValid()) std::cerr << "\t         beam: \"" << ip->beam()->name() << "\"\n";
         else std::cerr << "\t         beam: <null> \n";
   
         std::pair<ioputMapT::iterator, bool> res = m_outputs.insert({ip->key(), ip});
@@ -94,7 +97,7 @@ std::string instNode::addIOPut( instIOPut * ip )
   
         instIOPut * newPut = res.first->second;
   
-        if(newPut->beam() != nullptr) 
+        if(newPut->beamValid()) 
         {
             newPut->beam()->source(newPut);
         }
@@ -116,6 +119,17 @@ const instNode::ioputMapT & instNode::inputs() const
    return m_inputs;
 }
 
+const bool instNode::inputValid( const std::string & key) const 
+{
+    if(m_inputs.count(key) != 1)
+    {
+        return false;
+    }
+    
+    return(m_inputs.at(key) != nullptr);
+
+}
+
 instIOPut * instNode::input( const std::string & key)
 {
     if(m_inputs.count(key) != 1)
@@ -131,12 +145,28 @@ instIOPut * instNode::input( const std::string & key)
         throw std::invalid_argument(msg);
     };
 
+    if(m_inputs[key] == nullptr)
+    {
+        throw std::out_of_range("instNode::input() attempt to access m_inputs item pointer which is null");
+    }
+
     return m_inputs[key];
 }
 
 const instNode::ioputMapT & instNode::outputs() const
 {
    return m_outputs;
+}
+
+const bool instNode::outputValid( const std::string & key) const 
+{
+    if(m_outputs.count(key) != 1)
+    {
+        return false;
+    }
+    
+    return(m_outputs.at(key) != nullptr);
+
 }
 
 instIOPut * instNode::output( const std::string & key)
@@ -153,6 +183,11 @@ instIOPut * instNode::output( const std::string & key)
 
         throw std::invalid_argument(msg);
     };
+
+    if(m_outputs[key] == nullptr)
+    {
+        throw std::out_of_range("instNode::output() attempt to access m_outputs item pointer which is null");
+    }
 
     return m_outputs[key];
 }
