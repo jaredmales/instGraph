@@ -25,12 +25,21 @@ This loads the instrument graph specified in `demo1.toml`.  The program currentl
 
 The basic code needed here is
 ```c++
-#include "../instGraph.hpp"
+#include "../instGraphXML.hpp"
 
 int main()
 {
-    ingr::instGraph igr;
-    igr.constructFromTOMLFile("demo1.toml");
+    ingr::instGraphXML igr;
+    igr.outputPath("tmp.drawio");
+
+    std::string emsg;
+    int ec = igr.loadXMLFile(emsg, "demo2.drawio");
+    
+    if(ec < 0)
+    {
+        std::cerr << "demo2: error\n  " << emsg << "\n  code: " << ec << std::endl;
+        return ec;
+    }
 
     ...
 ```

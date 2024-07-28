@@ -26,12 +26,12 @@ This loads the instrument graph specified in `demo1.toml`.  The program currentl
 
 The basic code needed here is
 ```c++
-#include "../instGraph.hpp"
+#include "../instGraphTOML.hpp"
 
 int main()
 {
-    ingr::instGraph igr;
-    igr.constructFromTOMLFile("demo1.toml");
+    ingr::instGraphTOML igr;
+    igr.loadTOMLFile("demo1.toml");
 
     ...
 ```
