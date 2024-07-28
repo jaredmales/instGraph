@@ -1,6 +1,7 @@
 #include "instIOPut.hpp"
 #include "instNode.hpp"
 #include "instBeam.hpp"
+#include "instGraph.hpp"
 
 #include <iostream>
 
@@ -145,16 +146,28 @@ void instIOPut::state( putState ns,
         }
     }
 
+    bool changed = false;
+
+    if(m_state != ns)
+    {
+        changed = true;
+    }
+
     m_state = ns;
+
+    if(changed)
+    {
+        if(m_parentGraph) m_parentGraph->stateChange();
+    }
 
     //If an input and it is linked, propagate to the linked outputs
     if(m_io == ioDir::input && m_outputLinks.size() > 0 && m_node)
     {
         for(auto && oit : m_outputLinks)
         {
-            if(m_node->output(oit) == nullptr)
+            if(!m_node->outputValid(oit))
             {
-                throw std::logic_error("instIOPut::state: nullptr in outputLinks");
+                throw std::logic_error("instIOPut::state: outputLink is invalid");
             }
 
             m_node->output(oit)->state(ns);
@@ -165,6 +178,11 @@ void instIOPut::state( putState ns,
     {
         m_beam->stateChange();
     }
+}
+
+void instIOPut::parentGraph(instGraph * ig)
+{
+    m_parentGraph = ig;
 }
 
 std::string instIOPut::key() const
@@ -192,6 +210,26 @@ void instIOPut::outputLink(const std::string & ol)
 const std::set<std::string> & instIOPut::outputLinks()
 {
    return m_outputLinks;
+}
+
+bool instIOPut::auxDataValid()
+{
+    return (m_auxData != nullptr);
+}
+
+void * instIOPut::auxData()
+{
+    if(m_auxData == nullptr)
+    {
+        throw std::out_of_range("instIOPut::auxData(): attemmpt to accesss m_auxData pointer which is null");
+    }
+
+    return m_auxData;
+}
+
+void instIOPut::auxData( void * ad)
+{
+    m_auxData = ad;
 }
 
 void instIOPut::stateChange()

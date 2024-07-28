@@ -8,7 +8,8 @@
 namespace ingr
 {
 
-struct instNode;
+//Forward
+class instGraph;
 
 /// Class to represent a propagation path
 /** An `instBeam` connects an output of one node to an input of a different node.
@@ -33,7 +34,12 @@ protected:
                             beamState::off (default), beamState::intermediate, 
                             or beamState::on. */
 
+    instGraph * m_parentGraph {nullptr}; ///< Pointer to the parent instGraph that holds this beam
+
+    void * m_auxData {nullptr}; ///< Auxilliary data for this beam, i.e. for GUI support.
+
 public:
+
     /// Default c'tor
     instBeam();
 
@@ -92,6 +98,27 @@ public:
       */
     beamState state();
  
+    /// Set the parent instGraph
+    void parentGraph(instGraph * ig /**< [in] pointer to the parent instGraph */);
+
+    /// Check if an aux data pointer is valid
+    /**
+      * \returns true if m_auxData is not nullptr
+      * \returns false otherwise 
+      */
+    bool auxDataValid();
+
+    /// Get the aux data pointer
+    /**
+      * \returns the aux data pointer m_auxData
+      * 
+      * \throws std::out_of_range if the pointer is null.  Call auxDataValid first to check if the pointer is not null.
+      */
+    void * auxData();
+
+    /// Set the aux data pointer
+    void auxData( void * ad /**< [in] the new aux data pointer */);
+    
     /// Get the name of the beam
     /**
       * \returns the name of the beam 

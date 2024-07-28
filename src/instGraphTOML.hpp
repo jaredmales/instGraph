@@ -15,7 +15,10 @@ namespace v3
 namespace ingr
 {
 
-/// A class to hold an instrument graph.
+/// Specifying an instrument graph with TOML.
+/**
+  * \ingroup explainer 
+  */
 class instGraphTOML : public instGraph
 {
 

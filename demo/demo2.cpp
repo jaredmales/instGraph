@@ -8,7 +8,8 @@
 int main()
 {
     ingr::instGraphXML igr;
-
+    igr.outputPath("tmp.drawio");
+    
     std::cerr << "######################################\n";
     std::cerr << " building graph\n";
     std::cerr << "######################################\n\n";
@@ -55,7 +56,7 @@ int main()
         std::cerr << "\n";
     }
  
-    
+    char c;
 
     std::cerr << "######################################\n";
     std::cerr << " running demo\n";
@@ -66,7 +67,10 @@ int main()
     std::cout << "fwtelsim2pickoff state  = " << ingr::beamState2String(igr.beam("fwtelsim2pickoff")->state()) << "\n  ";
     std::cout << "telescope2pickoff state = " << ingr::beamState2String(igr.beam("telescope2pickoff")->state()) << "\n  ";
     std::cout << "pickoff2stagek state    = " << ingr::beamState2String(igr.beam("pickoff2stagek")->state()) << "\n";
- 
+    igr.stateChange();
+
+    std::cout << "press enter . . .";
+    c = getchar();
     std::cout << "\n\n";
 
     std::cout << "Step 1: source.out on:\n  ";
@@ -76,6 +80,8 @@ int main()
     std::cout << "telescope2pickoff state = " << ingr::beamState2String(igr.beam("telescope2pickoff")->state()) << "\n  ";
     std::cout << "pickoff2stagek state    = " << ingr::beamState2String(igr.beam("pickoff2stagek")->state()) << "\n";
  
+    std::cout << "press enter . . .";
+    c = getchar();
     std::cout << "\n\n";
 
     std::cout << "Step 2: fwtelsim.in on:\n  ";
@@ -85,6 +91,8 @@ int main()
     std::cout << "telescope2pickoff state = " << ingr::beamState2String(igr.beam("telescope2pickoff")->state()) << "\n  ";
     std::cout << "pickoff2stagek state    = " << ingr::beamState2String(igr.beam("pickoff2stagek")->state()) << "\n";
  
+    std::cout << "press enter . . .";
+    c = getchar();
     std::cout << "\n\n";
 
     std::cout << "Step 3: stagek.in on:\n  ";
@@ -96,6 +104,8 @@ int main()
     std::cout << "telescope2pickoff state = " << ingr::beamState2String(igr.beam("telescope2pickoff")->state()) << "\n  ";
     std::cout << "pickoff2stagek state    = " << ingr::beamState2String(igr.beam("pickoff2stagek")->state()) << "\n";
 
+    std::cout << "press enter . . .";
+    c = getchar();
     std::cout << "\n\n";
 
     std::cout << "Step 4: pickoff.lab on:\n  ";
@@ -107,6 +117,8 @@ int main()
     std::cout << "telescope2pickoff state = " << ingr::beamState2String(igr.beam("telescope2pickoff")->state()) << "\n  ";
     std::cout << "pickoff2stagek state    = " << ingr::beamState2String(igr.beam("pickoff2stagek")->state()) << "\n";
  
+    std::cout << "press enter . . .";
+    c = getchar();
     std::cout << "\n\n";
 
     std::cout << "Step 5: source.out off:\n  ";
@@ -119,6 +131,8 @@ int main()
     std::cout << "telescope2pickoff state = " << ingr::beamState2String(igr.beam("telescope2pickoff")->state()) << "\n  ";
     std::cout << "pickoff2stagek state    = " << ingr::beamState2String(igr.beam("pickoff2stagek")->state()) << "\n";
  
+    std::cout << "press enter . . .";
+    c = getchar();
     std::cout << "\n\n";
 
     std::cout << "Step 6: tel.out on:\n  ";
@@ -128,6 +142,8 @@ int main()
     std::cout << "telescope2pickoff state = " << ingr::beamState2String(igr.beam("telescope2pickoff")->state()) << "\n  ";
     std::cout << "pickoff2stagek state    = " << ingr::beamState2String(igr.beam("pickoff2stagek")->state()) << "\n";
     
+    std::cout << "press enter . . .";
+    c = getchar();
     std::cout << "\n\n";
 
     std::cout << "Step 7: pickoff.lab off, pickoff.tel on:\n  ";

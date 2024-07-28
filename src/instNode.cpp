@@ -192,6 +192,27 @@ instIOPut * instNode::output( const std::string & key)
     return m_outputs[key];
 }
 
+bool instNode::auxDataValid()
+{
+    return (m_auxData != nullptr);
+}
+
+void * instNode::auxData()
+{
+    if(m_auxData == nullptr)
+    {
+        throw std::out_of_range("instNode::auxData(): attemmpt to accesss m_auxData pointer which is null");
+    }
+
+    return m_auxData;
+}
+
+void instNode::auxData( void * ad)
+{
+    m_auxData = ad;
+}
+    
+
 void instNode::stateChange()
 {
 

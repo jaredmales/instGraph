@@ -109,5 +109,9 @@ instBeam * instGraph::beam( const std::string & key )
     return m_beams[key];
 }
 
+void instGraph::stateChange()
+{
+}
+
 } //namespace ingr
 

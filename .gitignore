@@ -3,5 +3,6 @@ _build
 .vscode/
 demo/demo1
 demo/demo2
+demo/tmp.drawio
 doc/html/
 old/

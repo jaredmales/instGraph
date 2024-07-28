@@ -34,6 +34,8 @@ protected:
    
    ioputMapT m_outputs; ///< Map of the outputs
 
+    void * m_auxData {nullptr}; ///< Auxilliary data for this node, i.e. for GUI support.
+
 public:
 
     /// Default c'tor
@@ -84,6 +86,7 @@ public:
     /**
       * \returns a reference to the input with the given name
       * 
+      * \throws std::invalid_argument if key is not in m_inputs 
       * \throws std::out_of_range if the pointer is null.  Call inputValid(key) first to check if the pointer is not null.
       */ 
     instIOPut * input( const std::string & key /**< [in] the name of the input*/);
@@ -104,11 +107,30 @@ public:
     /// Get an output by its key
     /**
       * \returns a reference to the output with the given name
-      * 
+      *
+      * \throws std::invalid_argument if key is not in m_outputs 
       * \throws std::out_of_range if the pointer is null.  Call outputValid(key) first to check if the pointer is not null.
       */
     instIOPut * output( const std::string & key /**< [in] the name of the output*/);
  
+    /// Check if an aux data pointer is valid
+    /**
+      * \returns true if m_auxData is not nullptr
+      * \returns false otherwise 
+      */
+    bool auxDataValid();
+
+    /// Get the aux data pointer
+    /**
+      * \returns the aux data pointer m_auxData
+      * 
+      * \throws std::out_of_range if the pointer is null.  Call auxDataValid first to check if the pointer is not null.
+      */
+    void * auxData();
+
+    /// Set the aux data pointer
+    void auxData( void * ad /**< [in] the new aux data pointer */);
+    
     /// Handle a state change by one of the nodes
     /**
       * Currently a no-op 

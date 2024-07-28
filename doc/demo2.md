@@ -3,7 +3,7 @@
 
 This demo illustrates the logic of the inputs to the MagAO-X instrument.  The source can be either the internal telescope simulator, starting at the node `source`, which is a laser, or the node `telescope` which represents the, well, telescope.
 
-Here we specify the graph using a `drawio` XML file.  This will soon enable GUI updates.
+Here we specify the graph using the`demo2.drawio` XML file.  The file `tmp.drawio` will be updated at each step to show the state of the graph.  You can view this in real-time by opening it in VS Code with the `drawio` plugin enabled.  
 
 ## Building
 
@@ -41,7 +41,7 @@ Once the graph is loaded, then a series of steps are executed showing how change
 
 Each step is illustrated with a diagram of the instrument graph.  The legend for the diagrams is provided here.
 
-![demo 1 legend](images/demo1_legend.png "Legend.")
+![demo 2 legend](images/demo1_legend.png "Legend.")
 
 
 ### Step 0:
@@ -55,7 +55,7 @@ For Step 0 all the puts are in the default state of off.  The beams are therefor
   pickoff2stagek state    = off
 ```
 
-![demo 1 step 0](images/demo1_step0.png "Step 0: all inputs and outputs are off.")
+![demo 2 step 0](images/demo2_step0.png "Step 0: all inputs and outputs are off.")demo2_step
 
 ### Step 1:
 
@@ -71,7 +71,7 @@ This causes the beam `source2fwtelsim` to become intermediate.  The demo outputs
   pickoff2stagek state    = off
 ```
 and the graph looks like:
-![demo 1 step 1](images/demo1_step1.png "Step 1: `source` output `out` is turned on.")
+![demo 2 step 1](images/demo2_step1.png "Step 1: `source` output `out` is turned on.")
 
 ### Step 2:
 
@@ -89,7 +89,7 @@ The demo outputs:
   pickoff2stagek state    = off
 ```
 and the graph looks like
-![demo 1 step 2](images/demo1_step2.png "Step 2: ")
+![demo 2 step 2](images/demo2_step2.png "Step 2: ")
 
 ### Step 3:
 
@@ -110,7 +110,7 @@ The demo outputs
 ```
 and graphically:
 
-![demo 1 step 3](images/demo1_step3.png "Step 3: ")
+![demo 2 step 3](images/demo2_step3.png "Step 3: ")
 
 ### Step 4:
 
@@ -128,7 +128,7 @@ Now the beam propagates all the way to `stagek.out`, with inputs and outputs in 
   pickoff2stagek state    = on
 ```
 and the graph looks like
-![demo 1 step 4](images/demo1_step4.png "Step 4: ")
+![demo 2 step 4](images/demo2_step4.png "Step 4: ")
 
 ### Step 5:
 
@@ -147,7 +147,7 @@ Now all beams are `off`, and downstream inputs and outputs become `waiting`.  Th
   pickoff2stagek state    = off
 ```
 and the graph is
-![demo 1 step 5](images/demo1_step5.png "Step 5: ")
+![demo 2 step 5](images/demo2_step5.png "Step 5: ")
 
 ### Step 6:
 Now the telescope output is turned on.  This is the logical equivalent of pointing at a star with the dome open.
@@ -165,7 +165,7 @@ Demo output:
 ```
 
 Graph state:
-![demo 1 step 6](images/demo1_step6.png "Step 6: ")
+![demo 2 step 6](images/demo2_step6.png "Step 6: ")
 
 ### Step 7:
 Finally, the pickoff mirror is moved to the telescope position.  Logically this corresponds to `pickoff.lab` being `off` and `pickoff.tel` being `on`.
@@ -185,4 +185,4 @@ Demo output:
 ```
 
 Graph state:
-![demo 1 step 7](images/demo1_step7.png "Step 7: ")
+![demo 2 step 7](images/demo2_step7.png "Step 7: ")

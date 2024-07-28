@@ -429,8 +429,6 @@ int parseBeam( std::string & name,
 
 }
 
-
-
 //walker struct for depth traversal to look for the mxGraphModel
 struct find_mxGraph: pugi::xml_tree_walker
 {
@@ -454,6 +452,43 @@ instGraphXML::instGraphXML()
 
 instGraphXML::~instGraphXML()
 {
+    //Clean up aux data
+    for(auto it : m_nodes)
+    {
+        if(it.second->auxDataValid())
+        {
+            delete static_cast<auxDataT *>(it.second->auxData());
+            it.second->auxData(nullptr);
+        }
+
+        for(auto iit : it.second->inputs())
+        {
+            if(iit.second->auxDataValid())
+            {
+                delete static_cast<auxDataT *>(iit.second->auxData());
+                iit.second->auxData(nullptr);
+            }
+        }
+
+        for(auto oit : it.second->outputs())
+        {
+            if(oit.second->auxDataValid())
+            {
+                delete static_cast<auxDataT *>(oit.second->auxData());
+                oit.second->auxData(nullptr);
+            }
+        }
+    }
+
+    for(auto it : m_beams)
+    {
+        if(it.second->auxDataValid())
+        {
+            delete static_cast<auxDataT *>(it.second->auxData());
+            it.second->auxData(nullptr);
+        }
+    }
+
     if(m_doc)
     {
         delete m_doc;
@@ -526,6 +561,11 @@ int instGraphXML::parseXMLDoc( std::string & emsg )
             instNode * newNode = new instNode(name);
 
             std::pair<nodeMapT::iterator, bool> nodeRes = m_nodes.emplace(name, newNode);
+            ///\todo result check
+
+            //pugi::xml_node * xn = new pugi::xml_node(cell);
+            guiData * gd = new guiData(&cell);
+            newNode->auxData(gd);
             
         }
         else if(value[0] == 'o' || value[0] == 'i')
@@ -552,6 +592,12 @@ int instGraphXML::parseXMLDoc( std::string & emsg )
 
             instIOPut * newPut = new instIOPut({newNode, dir, name, type, nullptr});
             newNode->addIOPut(newPut);
+            newPut->parentGraph(this); ///\todo we need a single way to do this all
+
+            //pugi::xml_node * xn = new pugi::xml_node(cell);
+            guiData * gd = new guiData(&cell);
+            newPut->auxData(gd);
+
         }
         else if(value[0] == 'b')
         {
@@ -574,13 +620,19 @@ int instGraphXML::parseXMLDoc( std::string & emsg )
             instBeam * newBeam = new instBeam;
             std::pair<beamMapT::iterator, bool> beamRes = m_beams.emplace(name, newBeam);
             newBeam->name(name);
+            newBeam->parentGraph(this); ///\todo we need a single way to do this all
 
+            ///\todo must check if these nodes and puts exist and possibly create if they don't
             m_nodes[outNode]->output(outName)->beam(newBeam);
 
             newBeam->source(m_nodes[outNode]->output(outName));
 
             m_nodes[inNode]->input(inName)->beam(newBeam);
             newBeam->dest(m_nodes[inNode]->input(inName));
+
+            guiData * gd = new guiData(&cell);
+            //pugi::xml_node * xn = new pugi::xml_node(cell);
+            newBeam->auxData(gd);
         }
         else if(value[0] == 'l')
         {
@@ -625,8 +677,6 @@ int instGraphXML::parseXMLDoc( std::string & emsg,
 int instGraphXML::loadXMLFile( std::string & emsg,
                                const std::string & fname 
                              )
-
-
 {
     if (!m_doc->load_file(fname.c_str())) 
     {
@@ -635,6 +685,207 @@ int instGraphXML::loadXMLFile( std::string & emsg,
     }
 
     return parseXMLDoc( emsg );
+}
+
+const std::string & instGraphXML::outputPath()
+{
+    return m_outputPath;
+}
+
+
+void instGraphXML::outputPath( const std::string & op )
+{
+    m_outputPath = op;
+}
+
+void instGraphXML::stateChange()
+{
+    for(auto it : m_beams)
+    {
+        if(it.second->auxDataValid())
+        {
+            auxDataT * auxData = static_cast<auxDataT *>(it.second->auxData());
+            if(it.second->state() == beamState::on)
+            {
+                auxData->strokeColor(m_colorOn);
+                auxData->fontColor(m_colorOn);
+            }
+            else if(it.second->state() == beamState::intermediate)
+            {
+                auxData->strokeColor(m_colorInt);
+                auxData->fontColor(m_colorInt);
+            }
+            else if(it.second->state() == beamState::off)
+            {
+                auxData->strokeColor(m_colorOff);
+                auxData->fontColor(m_colorOff);
+            }
+        }
+    }
+
+    for(auto it : m_nodes)
+    {
+        for(auto iit : it.second->inputs())
+        {
+            if(iit.second->auxDataValid())
+            {
+                auxDataT * auxData = static_cast<auxDataT *>(iit.second->auxData());
+            
+                if(iit.second->state() == putState::on)
+                {
+                    auxData->strokeColor(m_colorOn);
+                    auxData->fontColor(m_colorOn);
+                }
+                else if(iit.second->state() == putState::waiting)
+                {
+                    auxData->strokeColor(m_colorInt);
+                    auxData->fontColor(m_colorInt);
+                }
+                else if(iit.second->state() == putState::off)
+                {
+                    auxData->strokeColor(m_colorOff);
+                    auxData->fontColor(m_colorOff);
+                }
+            }
+        }
+
+        for(auto oit : it.second->outputs())
+        {
+            if(oit.second->auxDataValid())
+            {
+                auxDataT * auxData = static_cast<auxDataT *>(oit.second->auxData());
+            
+                if(oit.second->state() == putState::on)
+                {
+                    auxData->strokeColor(m_colorOn);
+                    auxData->fontColor(m_colorOn);
+                }
+                else if(oit.second->state() == putState::waiting)
+                {
+                    auxData->strokeColor(m_colorInt);
+                    auxData->fontColor(m_colorInt);
+                }
+                else if(oit.second->state() == putState::off)
+                {
+                    auxData->strokeColor(m_colorOff);
+                    auxData->fontColor(m_colorOff);
+                }
+            }
+        }
+    }
+    
+    m_doc->save_file(m_outputPath.c_str());
+}
+
+instGraphXML::guiData::guiData(pugi::xml_node * xn)
+{
+    xmlNode = new pugi::xml_node(*xn);
+    findColors();
+}
+
+instGraphXML::guiData::~guiData()
+{
+    if(xmlNode != nullptr)
+    {
+        delete xmlNode;
+    } 
+}
+
+void instGraphXML::guiData::findColors()
+{
+    if(xmlNode == nullptr)
+    {
+        styleValue = "";
+        strokeColorPos = std::string::npos;
+        fontColorPos = std::string::npos;
+        return;
+    }
+
+    pugi::xml_attribute style = xmlNode->attribute("style");
+    
+    if(!style.empty())
+    {
+        styleValue = style.value();
+
+        strokeColorPos = styleValue.find("strokeColor"); //+13 to char 0 of the color
+        fontColorPos = styleValue.find("fontColor"); //+11 to char 0 of the color
+    }
+    else
+    {
+        styleValue = "";
+        strokeColorPos = std::string::npos;
+        fontColorPos = std::string::npos;
+    }
+}
+
+void instGraphXML::guiData::strokeColor(const std::string & color)
+{
+    if(xmlNode == nullptr)
+    {
+        return;
+    }
+
+    if(strokeColorPos == std::string::npos)
+    {
+        return;
+    }
+
+    if(color.size() != 6)
+    {
+        return;
+    }
+
+    if(styleValue.size() < strokeColorPos + 13 + 6)
+    {
+        return;
+    }
+
+    for(int c = 0; c < 6; ++c)
+    {
+        styleValue[strokeColorPos + 13 + c] = color[c];
+    }
+
+    pugi::xml_attribute style = xmlNode->attribute("style");
+    
+    if(!style.empty())
+    {
+        style.set_value(styleValue.c_str());
+    }
+}
+
+void instGraphXML::guiData::fontColor(const std::string & color)
+{
+    if(xmlNode == nullptr)
+    {
+        return;
+    }
+
+    if(fontColorPos == std::string::npos)
+    {
+        return;
+    }
+
+    if(color.size() != 6)
+    {
+        return;
+    }
+
+    if(styleValue.size() < fontColorPos + 11 + 6)
+    {
+        return;
+    }
+
+    for(int c = 0; c < 6; ++c)
+    {
+        styleValue[fontColorPos + 11 + c] = color[c];
+    }
+
+    pugi::xml_attribute style = xmlNode->attribute("style");
+    
+    if(!style.empty())
+    {
+        style.set_value(styleValue.c_str());
+    }
 }
 
 } //namespace ingr

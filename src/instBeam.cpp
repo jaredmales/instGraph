@@ -1,4 +1,5 @@
 #include "instBeam.hpp"
+#include "instGraph.hpp"
 
 #include <iostream>
 
@@ -73,6 +74,31 @@ beamState instBeam::state()
    return m_state;
 }
 
+void instBeam::parentGraph(instGraph * ig)
+{
+    m_parentGraph = ig;
+}
+
+bool instBeam::auxDataValid()
+{
+    return (m_auxData != nullptr);
+}
+
+void * instBeam::auxData()
+{
+    if(m_auxData == nullptr)
+    {
+        throw std::out_of_range("instBeam::auxData(): attemmpt to accesss m_auxData pointer which is null");
+    }
+
+    return m_auxData;
+}
+
+void instBeam::auxData( void * ad)
+{
+    m_auxData = ad;
+}
+
 std::string instBeam::key()
 {
    return m_name;
@@ -97,6 +123,8 @@ void instBeam::stateChange()
             }
         }
 
+        if(m_parentGraph) m_parentGraph->stateChange();
+
         return;
     }
 
@@ -107,11 +135,18 @@ void instBeam::stateChange()
         {
             m_state = beamState::intermediate;
         }
-        else 
+        else if(m_state == beamState::off )
+        {
+            return; //no state change
+        }
+        else
         {
             m_state = beamState::off;
         }
-      return;
+
+        if(m_parentGraph) m_parentGraph->stateChange();
+      
+        return;
    }
 
     //No nullptrs
@@ -124,27 +159,43 @@ void instBeam::stateChange()
         {
             m_dest->state(putState::waiting, true);
         }
+
+        if(m_parentGraph) m_parentGraph->stateChange();
+
         return;
     }
     else if(m_source->state() == putState::on)
     {
         if( m_dest->state() == putState::on || m_dest->state() == putState::waiting) 
         {
-            if(m_state == beamState::on) return;
+            if(m_state == beamState::on) 
+            {
+                return;
+            }
             m_state = beamState::on;
 
             m_dest->state(putState::on, true);
         }
         else 
         {
-            if(m_state == beamState::intermediate) return;
+            if(m_state == beamState::intermediate) 
+            {
+                return;
+            }
             m_state = beamState::intermediate;
         }
+
+        if(m_parentGraph) m_parentGraph->stateChange();
+
         return;
     }
     else
     {
-        if(m_state == beamState::off) return;
+        if(m_state == beamState::off) 
+        {
+            return;
+        }
+
         m_state = beamState::off;
         
         if(m_dest->state() == putState::on)
@@ -152,6 +203,7 @@ void instBeam::stateChange()
             m_dest->state(putState::waiting, true);
         }
       
+        if(m_parentGraph) m_parentGraph->stateChange();
         return;
    }
 

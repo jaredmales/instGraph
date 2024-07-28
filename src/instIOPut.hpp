@@ -12,6 +12,7 @@ namespace ingr
 //Forward decls:
 struct instBeam;
 struct instNode;
+class instGraph;
 
 /** We refer to inputs and outputs generically as an "IOPut" or a "put". 
   * An IOPut can either be an ioDir::input or ioDir::output (the "direction") and is
@@ -65,6 +66,10 @@ protected:
       */
     std::set<std::string> m_outputLinks; 
 
+    instGraph * m_parentGraph {nullptr}; ///< Pointer to the parent instGraph that holds this beam
+
+    void * m_auxData {nullptr}; ///< Auxilliary data for this beam, i.e. for GUI support.
+
 public:
 
     /// Default c'tor
@@ -72,7 +77,7 @@ public:
     
     /// Full c'tor
     instIOPut( instNode * node,  ///< [in] the parent node
-               ioDir io,        ///< [in] the I/O direction
+               ioDir io,         ///< [in] the I/O direction
                std::string name, ///< [in] the unique name of this input/output
                putType type,     ///< [in] the type of this input/output
                instBeam * beam   ///< [in] the beam that connects to this input/output
@@ -189,6 +194,27 @@ public:
       */
     const std::set<std::string> & outputLinks();
  
+    /// Set the parent instGraph
+    void parentGraph(instGraph * ig /**< [in] pointer to the parent instGraph */);
+
+    /// Check if an aux data pointer is valid
+    /**
+      * \returns true if m_auxData is not nullptr
+      * \returns false otherwise 
+      */
+    bool auxDataValid();
+
+    /// Get the aux data pointer
+    /**
+      * \returns the aux data pointer m_auxData
+      * 
+      * \throws std::out_of_range if the pointer is null.  Call auxDataValid first to check if the pointer is not null.
+      */
+    void * auxData();
+
+    /// Set the aux data pointer
+    void auxData( void * ad /**< [in] the new aux data pointer */);
+
     /// Process a state change from a connected beam.
     /** This is called by the beam.  This calls the parent node's state change function.
       * 
