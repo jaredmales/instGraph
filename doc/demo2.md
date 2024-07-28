@@ -21,7 +21,7 @@ Run the demo with
 $ ./demo2
 ```
 
-This loads the instrument graph specified in `demo1.toml`.  The program currently gives verbose output describing what it's doing to load and construct the graph, and then dumps a simplified representation of what was loaded.  The level of verbosity will be changeable in the future.
+This loads the instrument graph specified in `demo2.drawio`.  The program currently gives verbose output describing what it's doing to load and construct the graph, and then dumps a simplified representation of what was loaded.  The level of verbosity will be changeable in the future.
 
 The basic code needed here is
 ```c++
@@ -63,8 +63,10 @@ For Step 0 all the puts are in the default state of off.  The beams are therefor
   telescope2pickoff state = off
   pickoff2stagek state    = off
 ```
-
+And the starting graph looks like:
 ![demo 2 step 0](images/demo2_step0.png "Step 0: all inputs and outputs are off.")
+
+Note: you can view the graphs in real-time using the `drawio` pluging of VS Code.
 
 ### Step 1:
 
