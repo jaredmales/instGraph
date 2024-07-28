@@ -64,7 +64,7 @@ For Step 0 all the puts are in the default state of off.  The beams are therefor
   pickoff2stagek state    = off
 ```
 
-![demo 2 step 0](images/demo2_step0.png "Step 0: all inputs and outputs are off.")demo2_step
+![demo 2 step 0](images/demo2_step0.png "Step 0: all inputs and outputs are off.")
 
 ### Step 1:
 
