@@ -66,7 +66,7 @@ For Step 0 all the puts are in the default state of off.  The beams are therefor
 And the starting graph looks like:
 ![demo 2 step 0](images/demo2_step0.png "Step 0: all inputs and outputs are off.")
 
-Note: you can view the graphs in real-time using the `drawio` pluging of VS Code.
+Note: you can view the graphs in real-time using the `drawio` plugin of VS Code.
 
 ### Step 1:
 
