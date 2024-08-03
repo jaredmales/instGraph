@@ -5,10 +5,10 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace ingr 
+namespace ingr
 {
 
-instNode::instNode( const instNode & in )
+instNode::instNode(const instNode& in)
 {
     m_name = in.m_name;
     m_inputs = in.m_inputs;
@@ -17,12 +17,12 @@ instNode::instNode( const instNode & in )
 
 instNode::~instNode()
 {
-    for(auto && iput : m_inputs)
+    for (auto&& iput : m_inputs)
     {
         delete iput.second;
     }
 
-    for(auto && oput : m_outputs)
+    for (auto&& oput : m_outputs)
     {
         delete oput.second;
     }
@@ -30,96 +30,93 @@ instNode::~instNode()
 
 std::string instNode::name() const
 {
-   return m_name;
+    return m_name;
 }
 
-void instNode::name(const std::string & nn /**< [in] */)
+void instNode::name(const std::string& nn /**< [in] */)
 {
-   m_name = nn;
+    m_name = nn;
 }
 
 std::string instNode::key()
 {
-   return m_name;
+    return m_name;
 }
 
-std::string instNode::addIOPut( instIOPut * ip )
+std::string instNode::addIOPut(instIOPut* ip)
 {
-    if(ip == nullptr)
+    if (ip == nullptr)
     {
         throw std::invalid_argument("instNode::addIOPut nullptr");
     }
 
-    if(ip->io() == ioDir::input ) 
+    if (ip->io() == ioDir::input)
     {
-        std::pair<ioputMapT::iterator, bool> res = m_inputs.insert({ip->key(), ip});
-    
-        if(res.second == false) 
+        std::pair<ioputMapT::iterator, bool> res = m_inputs.insert({ ip->key(), ip });
+
+        if (res.second == false)
         {
             ///\todo test me
-  
+
             std::cerr << "input already exists\n";
-            return res.first->first; //return the key
+            return res.first->first; // return the key
         }
-  
-        instIOPut * newPut = res.first->second;
-  
-        if(newPut->beamValid()) 
+
+        instIOPut* newPut = res.first->second;
+
+        if (newPut->beamValid())
         {
             newPut->beam()->dest(ip);
         }
 
-        return res.first->first; //return the key
-
+        return res.first->first; // return the key
     }
-    else if(ip->io() == ioDir::output ) 
-    {  
-        std::pair<ioputMapT::iterator, bool> res = m_outputs.insert({ip->key(), ip});
-  
-        if(res.second == false) 
+    else if (ip->io() == ioDir::output)
+    {
+        std::pair<ioputMapT::iterator, bool> res = m_outputs.insert({ ip->key(), ip });
+
+        if (res.second == false)
         {
             std::cerr << "input already exists\n";
-            return res.first->first; //return the key
+            return res.first->first; // return the key
         }
-  
-        instIOPut * newPut = res.first->second;
-  
-        if(newPut->beamValid()) 
+
+        instIOPut* newPut = res.first->second;
+
+        if (newPut->beamValid())
         {
             newPut->beam()->source(newPut);
         }
 
-        return res.first->first; //return the key
-
+        return res.first->first; // return the key
     }
-    else 
+    else
     {
-        //shouldn't be able to get here
+        // shouldn't be able to get here
         throw std::invalid_argument("instNode::addIOPut invalid io type");
     }
 
     return "";
 }
 
-const instNode::ioputMapT & instNode::inputs() const
+const instNode::ioputMapT& instNode::inputs() const
 {
-   return m_inputs;
+    return m_inputs;
 }
 
-bool instNode::inputValid( const std::string & key) const 
+bool instNode::inputValid(const std::string& key) const
 {
-    if(m_inputs.count(key) != 1)
+    if (m_inputs.count(key) != 1)
     {
         return false;
     }
-    
-    return(m_inputs.at(key) != nullptr);
 
+    return (m_inputs.at(key) != nullptr);
 }
 
-instIOPut * instNode::input( const std::string & key)
+instIOPut* instNode::input(const std::string& key)
 {
-    if(m_inputs.count(key) != 1)
+    if (m_inputs.count(key) != 1)
     {
         std::string msg = "unknown input with key \"";
         msg += key + "\"";
@@ -132,7 +129,7 @@ instIOPut * instNode::input( const std::string & key)
         throw std::invalid_argument(msg);
     };
 
-    if(m_inputs[key] == nullptr)
+    if (m_inputs[key] == nullptr)
     {
         throw std::out_of_range("instNode::input() attempt to access m_inputs item pointer which is null");
     }
@@ -140,25 +137,24 @@ instIOPut * instNode::input( const std::string & key)
     return m_inputs[key];
 }
 
-const instNode::ioputMapT & instNode::outputs() const
+const instNode::ioputMapT& instNode::outputs() const
 {
-   return m_outputs;
+    return m_outputs;
 }
 
-bool instNode::outputValid( const std::string & key) const 
+bool instNode::outputValid(const std::string& key) const
 {
-    if(m_outputs.count(key) != 1)
+    if (m_outputs.count(key) != 1)
     {
         return false;
     }
-    
-    return(m_outputs.at(key) != nullptr);
 
+    return (m_outputs.at(key) != nullptr);
 }
 
-instIOPut * instNode::output( const std::string & key)
+instIOPut* instNode::output(const std::string& key)
 {
-    if(m_outputs.count(key) != 1)
+    if (m_outputs.count(key) != 1)
     {
         std::string msg = "unknown output with key \"";
         msg += key + "\"";
@@ -171,7 +167,7 @@ instIOPut * instNode::output( const std::string & key)
         throw std::invalid_argument(msg);
     };
 
-    if(m_outputs[key] == nullptr)
+    if (m_outputs[key] == nullptr)
     {
         throw std::out_of_range("instNode::output() attempt to access m_outputs item pointer which is null");
     }
@@ -181,10 +177,10 @@ instIOPut * instNode::output( const std::string & key)
 
 void instNode::updateOutputLinks()
 {
-    //First turn them all off in case one has been unlinke
-    for(auto && op : m_outputs)
+    // First turn them all off in case one has been unlinke
+    for (auto&& op : m_outputs)
     {
-        if(op.second == nullptr) 
+        if (op.second == nullptr)
         {
             continue;
         }
@@ -192,77 +188,75 @@ void instNode::updateOutputLinks()
         op.second->outputLinked(false);
     }
 
-    //Now check outputLinks of all inputs
-    for(auto && ip : m_inputs)
+    // Now check outputLinks of all inputs
+    for (auto&& ip : m_inputs)
     {
-        if(ip.second == nullptr)
+        if (ip.second == nullptr)
         {
             continue;
         }
 
-        for(auto && ol : ip.second->outputLinks()) //loop over the output links of this input
+        for (auto&& ol : ip.second->outputLinks()) // loop over the output links of this input
         {
-            try 
+            try
             {
-                instIOPut * op = output(ol);
+                instIOPut* op = output(ol);
                 op->outputLinked(true);
             }
-            catch(const std::invalid_argument & e)
+            catch (const std::invalid_argument& e)
             {
                 std::string msg = "exception caught at ";
                 msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
                 throw std::invalid_argument(msg);
             }
-            catch(const std::out_of_range & e)
+            catch (const std::out_of_range& e)
             {
                 std::string msg = "exception caught at ";
                 msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
                 throw std::out_of_range(msg);
             }
-            catch(const std::exception& e)
+            catch (const std::exception& e)
             {
                 std::string msg = "other exception caught at ";
                 msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
                 throw std::logic_error(msg);
             }
-            catch(...)
+            catch (...)
             {
                 std::string msg = "unknown exception caught at ";
                 msg += std::string(__FILE__) + " " + std::to_string(__LINE__);
                 throw std::logic_error(msg);
             }
-
         }
     }
 }
 
-
-void instNode::checkOutputLinks( const std::string op )
+void instNode::checkOutputLinks(const std::string op)
 {
-    if(!outputValid(op)) //don't bother if this output is bad
+    if (!outputValid(op)) // don't bother if this output is bad
     {
         return;
     }
 
     putState ps = putState::off;
 
-    for(auto && ip : m_inputs) //Check the output links of each input
+    for (auto&& ip : m_inputs) // Check the output links of each input
     {
-        if(ip.second == nullptr)
+        if (ip.second == nullptr)
         {
             continue;
         }
 
-        for(auto && ol : ip.second->outputLinks()) //loop over the output links of this input
+        for (auto&& ol : ip.second->outputLinks()) // loop over the output links of this input
         {
-            if(ol == op) //This is the output link we're looking for, so this input is linked to it
+            if (ol == op) // This is the output link we're looking for, so this input is linked to it
             {
-                //Set to on if it's on, waiting if it's off.
-                if(ip.second->state() == putState::on)
+                // Set to on if it's on, waiting if it's off.
+                if (ip.second->state() == putState::on)
                 {
                     ps = putState::on;
                 }
-                else if(ps == putState::off && ip.second->state() == putState::waiting)
+                else if (ps == putState::off && ip.second->state() == putState::waiting)
                 {
                     ps = putState::waiting;
                 }
@@ -270,30 +264,30 @@ void instNode::checkOutputLinks( const std::string op )
         }
     }
 
-    try 
+    try
     {
-        instIOPut * optr = output(op);
-        optr->state(ps, false, true); 
+        instIOPut* optr = output(op);
+        optr->state(ps, false, true);
     }
-    catch(const std::invalid_argument & e)
+    catch (const std::invalid_argument& e)
     {
         std::string msg = "exception caught at ";
         msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
         throw std::invalid_argument(msg);
     }
-    catch(const std::out_of_range & e)
+    catch (const std::out_of_range& e)
     {
         std::string msg = "exception caught at ";
         msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
         throw std::out_of_range(msg);
     }
-    catch(const std::exception& e)
+    catch (const std::exception& e)
     {
         std::string msg = "other exception caught at ";
         msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
         throw std::logic_error(msg);
     }
-    catch(...)
+    catch (...)
     {
         std::string msg = "unknown exception caught at ";
         msg += std::string(__FILE__) + " " + std::to_string(__LINE__);
@@ -306,9 +300,9 @@ bool instNode::auxDataValid()
     return (m_auxData != nullptr);
 }
 
-void * instNode::auxData()
+void* instNode::auxData()
 {
-    if(m_auxData == nullptr)
+    if (m_auxData == nullptr)
     {
         throw std::out_of_range("instNode::auxData(): attemmpt to accesss m_auxData pointer which is null");
     }
@@ -316,15 +310,12 @@ void * instNode::auxData()
     return m_auxData;
 }
 
-void instNode::auxData( void * ad)
+void instNode::auxData(void* ad)
 {
     m_auxData = ad;
 }
-    
 
 void instNode::stateChange()
 {
-
 }
-
 }
