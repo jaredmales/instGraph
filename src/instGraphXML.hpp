@@ -41,6 +41,8 @@ public:
         void strokeColor(const std::string & color);
 
         void fontColor(const std::string & color);
+
+        void value(const std::string & val);
     };
 
     typedef guiData auxDataT;
@@ -84,6 +86,12 @@ public:
 
     virtual void stateChange();
     
+    virtual void valuePut( const std::string & node,
+                           const std::string & put,
+                           const ioDir & dir,
+                           const std::string & val
+                         );
+
 }; //class instGraphXML
 
 }; //namespace ingr

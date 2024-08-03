@@ -563,7 +563,6 @@ int instGraphXML::parseXMLDoc( std::string & emsg )
             std::pair<nodeMapT::iterator, bool> nodeRes = m_nodes.emplace(name, newNode);
             ///\todo result check
 
-            //pugi::xml_node * xn = new pugi::xml_node(cell);
             guiData * gd = new guiData(&cell);
             newNode->auxData(gd);
             
@@ -660,6 +659,11 @@ int instGraphXML::parseXMLDoc( std::string & emsg )
             }
             m_nodes[inNode]->input(inName)->outputLink(outName);
         }
+    }
+
+    for(auto && nn : m_nodes)
+    {
+        nn.second->updateOutputLinks();
     }
 
     return 0;
@@ -777,6 +781,57 @@ void instGraphXML::stateChange()
     m_doc->save_file(m_outputPath.c_str());
 }
 
+///\todo make this use ioDIR
+void instGraphXML::valuePut( const std::string & node,
+                             const std::string & put,
+                             const ioDir & dir,
+                             const std::string & val
+                           )
+{
+    if(!m_nodes.count(node) == 1) 
+    {
+        return;
+    }
+
+    instNode * nptr;
+    
+    try
+    {
+        nptr = instGraph::node(node);
+    }
+    catch(...)
+    {
+        return;
+    }
+
+    instIOPut * pptr;
+    try 
+    {
+        if(dir == ioDir::input)
+        {
+            pptr = nptr->input(put);
+        }
+        else 
+        {
+            pptr = nptr->output(put);
+        }
+    }
+    catch(...)
+    {
+        return;
+    }
+
+    if(!pptr->auxDataValid())
+    {
+        return;
+    }
+
+    static_cast<auxDataT *>(pptr->auxData())->value(val);
+
+    m_doc->save_file(m_outputPath.c_str());
+}
+
+
 instGraphXML::guiData::guiData(pugi::xml_node * xn)
 {
     xmlNode = new pugi::xml_node(*xn);
@@ -885,6 +940,21 @@ void instGraphXML::guiData::fontColor(const std::string & color)
     if(!style.empty())
     {
         style.set_value(styleValue.c_str());
+    }
+}
+
+void instGraphXML::guiData::value(const std::string & val)
+{
+    if(xmlNode == nullptr)
+    {
+        return;
+    }
+
+    pugi::xml_attribute value = xmlNode->attribute("value");
+    
+    if(!value.empty())
+    {
+        value.set_value(val.c_str());
     }
 }
 

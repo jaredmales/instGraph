@@ -54,6 +54,8 @@ protected:
     
     instBeam * m_beam {nullptr}; ///< The beam connected to this put.
     
+    bool m_outputLinked {false}; ///< For an output, whether or not an input has an output link to this.
+
     /** The current state of the put: putState::off (default), putState::waiting, or 
       * putState::on.
       */ 
@@ -102,7 +104,7 @@ public:
       * \returns true if the pointer to parent node m_node is not null
       * \returns false otherwise 
       */
-    const bool nodeValid() const;
+    bool nodeValid() const;
 
     /// Get the pointer to the parent node
     /**
@@ -147,7 +149,7 @@ public:
       * \returns true if the pointer to the beam is not null
       * \returns false otherwise 
       */
-    const bool beamValid() const;
+    bool beamValid() const;
 
     /// Get the pointer to the beam connected to this put
     /**
@@ -160,6 +162,15 @@ public:
     /// Set the pointer to the beam connected to this put
     void beam( instBeam * nb /**< [in] the new beam address */ );
  
+    /// Set the outputLinked flag
+    void outputLinked( const bool & ol /**<[in] the new value of the output linked flag */);
+
+    /// Get the value of the outputLinked flag
+    /** 
+      * \returns the current value of m_outputLinked 
+      */
+    bool outputLinked() const;
+
     /// Get the current state of this put
     /**
       * \returns the current state m_state
@@ -170,10 +181,12 @@ public:
     /** Changes the state, and calls the beam's stateChange method
       * 
       */
-    void state( putState ns,        ///< [in] The new state, either putOn, putOff, or putWaiting
-                bool nobeam = false /**< [in] [optiona] If true then this only sets the state, 
-                                                        does not propagate to the beam.  Outputlinks 
-                                                        are updated. */
+    void state( putState ns,              ///< [in] The new state, either putOn, putOff, or putWaiting
+                bool nobeam = false,      /**< [in] [optiona] If true then this only sets the state, does not propagate 
+                                                              to the beam.  Outputlinks are updated. */
+                bool byOutputlink = false /**< [in] [optional] If false, and this is an output, and m_outputLinked = true,
+                                                               then this state call is ignored.  This should only be set 
+                                                               to true by a call triggered by an outputLink. */
               );
  
     /// Get the unique key for this put

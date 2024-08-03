@@ -52,13 +52,6 @@ std::string instNode::addIOPut( instIOPut * ip )
 
     if(ip->io() == ioDir::input ) 
     {
-        std::cerr << "\tadding output: \"" << ip->name() << "\"\n";
-        if(ip->beamValid()) 
-        {
-            std::cerr << "\t         beam: \"" << ip->beam()->name() << "\"\n";
-        }
-        else std::cerr << "\t         beam: <null> \n";
-
         std::pair<ioputMapT::iterator, bool> res = m_inputs.insert({ip->key(), ip});
     
         if(res.second == false) 
@@ -80,17 +73,11 @@ std::string instNode::addIOPut( instIOPut * ip )
 
     }
     else if(ip->io() == ioDir::output ) 
-    {
-        std::cerr << "\tadding output: \"" << ip->name() << "\"\n";
-        if(ip->beamValid()) std::cerr << "\t         beam: \"" << ip->beam()->name() << "\"\n";
-        else std::cerr << "\t         beam: <null> \n";
-  
+    {  
         std::pair<ioputMapT::iterator, bool> res = m_outputs.insert({ip->key(), ip});
   
         if(res.second == false) 
         {
-            ///\todo test me
-   
             std::cerr << "input already exists\n";
             return res.first->first; //return the key
         }
@@ -119,7 +106,7 @@ const instNode::ioputMapT & instNode::inputs() const
    return m_inputs;
 }
 
-const bool instNode::inputValid( const std::string & key) const 
+bool instNode::inputValid( const std::string & key) const 
 {
     if(m_inputs.count(key) != 1)
     {
@@ -158,7 +145,7 @@ const instNode::ioputMapT & instNode::outputs() const
    return m_outputs;
 }
 
-const bool instNode::outputValid( const std::string & key) const 
+bool instNode::outputValid( const std::string & key) const 
 {
     if(m_outputs.count(key) != 1)
     {
@@ -190,6 +177,128 @@ instIOPut * instNode::output( const std::string & key)
     }
 
     return m_outputs[key];
+}
+
+void instNode::updateOutputLinks()
+{
+    //First turn them all off in case one has been unlinke
+    for(auto && op : m_outputs)
+    {
+        if(op.second == nullptr) 
+        {
+            continue;
+        }
+
+        op.second->outputLinked(false);
+    }
+
+    //Now check outputLinks of all inputs
+    for(auto && ip : m_inputs)
+    {
+        if(ip.second == nullptr)
+        {
+            continue;
+        }
+
+        for(auto && ol : ip.second->outputLinks()) //loop over the output links of this input
+        {
+            try 
+            {
+                instIOPut * op = output(ol);
+                op->outputLinked(true);
+            }
+            catch(const std::invalid_argument & e)
+            {
+                std::string msg = "exception caught at ";
+                msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
+                throw std::invalid_argument(msg);
+            }
+            catch(const std::out_of_range & e)
+            {
+                std::string msg = "exception caught at ";
+                msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
+                throw std::out_of_range(msg);
+            }
+            catch(const std::exception& e)
+            {
+                std::string msg = "other exception caught at ";
+                msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
+                throw std::logic_error(msg);
+            }
+            catch(...)
+            {
+                std::string msg = "unknown exception caught at ";
+                msg += std::string(__FILE__) + " " + std::to_string(__LINE__);
+                throw std::logic_error(msg);
+            }
+
+        }
+    }
+}
+
+
+void instNode::checkOutputLinks( const std::string op )
+{
+    if(!outputValid(op)) //don't bother if this output is bad
+    {
+        return;
+    }
+
+    putState ps = putState::off;
+
+    for(auto && ip : m_inputs) //Check the output links of each input
+    {
+        if(ip.second == nullptr)
+        {
+            continue;
+        }
+
+        for(auto && ol : ip.second->outputLinks()) //loop over the output links of this input
+        {
+            if(ol == op) //This is the output link we're looking for, so this input is linked to it
+            {
+                //Set to on if it's on, waiting if it's off.
+                if(ip.second->state() == putState::on)
+                {
+                    ps = putState::on;
+                }
+                else if(ps == putState::off && ip.second->state() == putState::waiting)
+                {
+                    ps = putState::waiting;
+                }
+            }
+        }
+    }
+
+    try 
+    {
+        instIOPut * optr = output(op);
+        optr->state(ps, false, true); 
+    }
+    catch(const std::invalid_argument & e)
+    {
+        std::string msg = "exception caught at ";
+        msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
+        throw std::invalid_argument(msg);
+    }
+    catch(const std::out_of_range & e)
+    {
+        std::string msg = "exception caught at ";
+        msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
+        throw std::out_of_range(msg);
+    }
+    catch(const std::exception& e)
+    {
+        std::string msg = "other exception caught at ";
+        msg += std::string(__FILE__) + " " + std::to_string(__LINE__) + ":\n   " + e.what();
+        throw std::logic_error(msg);
+    }
+    catch(...)
+    {
+        std::string msg = "unknown exception caught at ";
+        msg += std::string(__FILE__) + " " + std::to_string(__LINE__);
+        throw std::logic_error(msg);
+    }
 }
 
 bool instNode::auxDataValid()

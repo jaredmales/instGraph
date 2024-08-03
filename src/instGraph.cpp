@@ -36,7 +36,7 @@ const instGraph::nodeMapT & instGraph::nodes()
     return m_nodes;
 }
 
-const bool instGraph::nodeValid( const std::string & key) const 
+bool instGraph::nodeValid( const std::string & key) const 
 {
     if(m_nodes.count(key) != 1)
     {
@@ -75,7 +75,7 @@ const instGraph::beamMapT & instGraph::beams()
     return m_beams;
 }
 
-const bool instGraph::beamValid( const std::string & key) const 
+bool instGraph::beamValid( const std::string & key) const 
 {
     if(m_beams.count(key) != 1)
     {

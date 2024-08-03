@@ -29,7 +29,7 @@ void instBeam::name(const std::string & n)
    m_name = n;
 }
 
-const bool instBeam::sourceValid() const
+bool instBeam::sourceValid() const
 {
     return (m_source != nullptr);
 }
@@ -49,7 +49,7 @@ void instBeam::source(instIOPut * inp)
    m_source = inp;
 }
 
-const bool instBeam::destValid() const
+bool instBeam::destValid() const
 {
     return (m_dest != nullptr);
 }

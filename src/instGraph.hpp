@@ -53,7 +53,7 @@ public:
       * \returns true if key is in m_modes and the pointer is not null 
       * \returns false otherwise 
       */
-    const bool nodeValid( const std::string & key /**< [in] the identifying key for the node */) const;
+    bool nodeValid( const std::string & key /**< [in] the identifying key for the node */) const;
 
     /// Get the pointer to the node index by \p key
     /** \note check whether the node exists and the pointer is valid using \ref nodeValid(const std::string &) before 
@@ -77,7 +77,7 @@ public:
       * \returns true if key is in m_beam and the pointer is not null 
       * \returns false otherwise 
       */
-    const bool beamValid( const std::string & key /**< [in] the identifying key for the beam */) const;
+    bool beamValid( const std::string & key /**< [in] the identifying key for the beam */) const;
 
     /// Get the pointer to the beam index by \p key
     /** \note check whether the beam exists and the pointer is valid using \ref beamValid(const std::string &) before 

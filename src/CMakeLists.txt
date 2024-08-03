@@ -25,5 +25,5 @@ SET_TARGET_PROPERTIES(instGraph-static PROPERTIES OUTPUT_NAME instGraph CLEAN_DI
 
 install (TARGETS instGraph-shared DESTINATION lib)
 install (TARGETS instGraph-static DESTINATION lib)
-install (FILES instGraph.hpp instGraphXML.hpp instNode.hpp instIOPut.hpp instBeam.hpp basicTypes.hpp DESTINATION include/instGraph)
+install (FILES instGraph.hpp instGraphXML.hpp instGraphTOML.hpp instNode.hpp instIOPut.hpp instBeam.hpp basicTypes.hpp DESTINATION include/instGraph)
 

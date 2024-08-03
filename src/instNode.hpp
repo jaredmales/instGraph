@@ -80,7 +80,7 @@ public:
       * \returns true if m_inputs contains an input identified by key and it is not nullptr
       * \returns false otherwise 
       */
-    const bool inputValid( const std::string & key /**< [in] the name of the input*/ ) const;
+    bool inputValid( const std::string & key /**< [in] the name of the input*/ ) const;
 
     /// Get an input by its key
     /**
@@ -102,7 +102,7 @@ public:
       * \returns true if m_outputs contains an output identified by key and it is not nullptr
       * \returns false otherwise 
       */
-    const bool outputValid( const std::string & key /**< [in] the name of the output*/ ) const;
+    bool outputValid( const std::string & key /**< [in] the name of the output*/ ) const;
 
     /// Get an output by its key
     /**
@@ -113,6 +113,28 @@ public:
       */
     instIOPut * output( const std::string & key /**< [in] the name of the output*/);
  
+    /// Update the outputLinked flag of all outputs
+    /** This should be called once after configuration of the node is complete.
+      * This is necessary because an output might not exist when an outputLink to 
+      * it is created in an input. 
+      * 
+      */
+    void updateOutputLinks();
+
+    /// Check state of all output links that link to a specific output
+    /** Checks the state of each input which links to this output.  The output
+      * is turned on if any of these inputs is on, otherwise it is waiting if
+      * any of these inputs is waiting.  It is only off if all linked inputs are
+      * off.
+      * 
+      * This is to deal with the problem of the latest event turning `off` an output node
+      * via an output link when it should be `on` due to a different output link.  Called
+      * from within instIOPut::state.
+      * 
+      * \todo hould upgrade outputLinks to hold both the input and output to make this faster.
+      */
+    void checkOutputLinks( const std::string op /**< [in] the output to check outputLinks for */);
+    
     /// Check if an aux data pointer is valid
     /**
       * \returns true if m_auxData is not nullptr

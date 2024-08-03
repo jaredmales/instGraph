@@ -60,7 +60,7 @@ public:
       * \returns true if the pointer to the source is not null
       * \returns false otherwise 
       */
-    const bool sourceValid() const;
+    bool sourceValid() const;
 
     /// Get the pointer to the input to the beam
     /**
@@ -78,7 +78,7 @@ public:
       * \returns true if the pointer to the dest is not null
       * \returns false otherwise 
       */
-    const bool destValid() const;
+    bool destValid() const;
     
     /// Get the pointer to the output of the beam
     /**

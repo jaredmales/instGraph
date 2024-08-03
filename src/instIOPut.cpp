@@ -51,7 +51,7 @@ void instIOPut::setup( instNode * node,
     makeKey();
 }
 
-const bool instIOPut::nodeValid() const
+bool instIOPut::nodeValid() const
 {
     return (m_node != nullptr);
 }
@@ -104,7 +104,7 @@ void instIOPut::type( putType t )
    makeKey();
 }
 
-const bool instIOPut::beamValid() const
+bool instIOPut::beamValid() const
 {
     return (m_beam != nullptr);
 }
@@ -124,13 +124,24 @@ void instIOPut::beam( instBeam * b)
    m_beam = b;
 }
 
+void instIOPut::outputLinked( const bool & ol )
+{
+    m_outputLinked = ol;
+}
+
+bool instIOPut::outputLinked() const 
+{
+    return m_outputLinked;
+}
+
 putState instIOPut::state() const
 {
    return m_state;
 }
 
 void instIOPut::state( putState ns,
-                       bool nobeam
+                       bool nobeam,
+                       bool byOutputLink
                      )
 {
     //If this is an input and switching on, check if beam is off
@@ -144,6 +155,13 @@ void instIOPut::state( putState ns,
                 ns = putState::waiting;
             }
         }
+    }
+
+    //If this is an output and it is output-linked from an input and this is not being set
+    //by that output link, we do nothing.
+    if(m_io == ioDir::output && m_outputLinked == true && byOutputLink == false)
+    {
+        return;
     }
 
     bool changed = false;
@@ -161,7 +179,7 @@ void instIOPut::state( putState ns,
     }
 
     //If an input and it is linked, propagate to the linked outputs
-    if(m_io == ioDir::input && m_outputLinks.size() > 0 && m_node)
+    if(m_io == ioDir::input && m_outputLinks.size() > 0 && m_node != nullptr)
     {
         for(auto && oit : m_outputLinks)
         {
@@ -169,8 +187,8 @@ void instIOPut::state( putState ns,
             {
                 throw std::logic_error("instIOPut::state: outputLink is invalid");
             }
-
-            m_node->output(oit)->state(ns);
+        
+            m_node->checkOutputLinks(oit);
         }
     }
 
