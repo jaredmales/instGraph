@@ -1,0 +1,24 @@
+Language:        Cpp
+IndentWidth:     4
+BreakBeforeBraces: Allman
+AlwaysBreakTemplateDeclarations: Yes
+SpaceBeforeParens: false
+AlignAfterOpenBracket: Align
+ColumnLimit:     120
+SpacesInConditionalStatement: true
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: true
+AllowShortFunctionsOnASingleLine: false
+AlignTrailingComments:
+    Kind: Always
+    OverEmptyLines: 1
+
+BinPackArguments: false
+BinPackParameters: false
+AllowAllArgumentsOnNextLine: false
+
+#This will screw with forwards for template instantiation if true
+SortIncludes: false
+
+IndentPPDirectives: BeforeHash
+ContinuationIndentWidth: 4

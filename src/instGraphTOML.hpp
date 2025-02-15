@@ -3,39 +3,37 @@
 
 #include "instGraph.hpp"
 
-//forward decl
+// forward decl
 namespace toml
 {
 namespace v3
 {
-    class table;
+class table;
 }
-}
+} // namespace toml
 
 namespace ingr
 {
 
 /// Specifying an instrument graph with TOML.
 /**
-  * \ingroup explainer 
-  */
+ * \ingroup explainer
+ */
 class instGraphTOML : public instGraph
 {
 
-public:
-
+  public:
     /// Default c'tor
     instGraphTOML();
 
     ~instGraphTOML();
-   
-    int parseTOMLTable( toml::v3::table & tbl );
 
-    int loadTOMLFile( const std::string & fname );
+    int parseTOMLTable( toml::v3::table &tbl );
 
-}; //class instGraphTOML
+    int loadTOMLFile( const std::string &fname );
 
-}; //namespace ingr
+}; // class instGraphTOML
 
+}; // namespace ingr
 
-#endif //instGraphTOML_hpp
+#endif // instGraphTOML_hpp
