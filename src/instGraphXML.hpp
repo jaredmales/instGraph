@@ -125,8 +125,8 @@ class instGraphXML : public instGraph
 
     struct guiData
     {
-        std::string m_defaultColor{ "#FFFFFF" };
-        int m_defaultOpacity{ 100 };
+        static constexpr char m_defaultColor[] = "#FFFFFF";
+        static constexpr int m_defaultOpacity= 100;
 
         pugi::xml_node *xmlNode{ nullptr };
 

@@ -1055,7 +1055,7 @@ void instGraphXML::guiData::strokeColor( const std::string &color )
     // Add it if it doesn't exist
     if( strokeColorPos.keyPos == std::string::npos )
     {
-        styleValue += "strokeColor=" + m_defaultColor + ";";
+        styleValue += std::string("strokeColor=") + m_defaultColor + ";";
         style.set_value( styleValue.c_str() );
         findColors();
 
@@ -1095,7 +1095,7 @@ void instGraphXML::guiData::fontColor( const std::string &color )
     // Add it if it doesn't exist
     if( fontColorPos.keyPos == std::string::npos )
     {
-        styleValue += "fontColor=" + m_defaultColor + ";";
+        styleValue += std::string("fontColor=") + m_defaultColor + ";";
         style.set_value( styleValue.c_str() );
         findColors();
 
