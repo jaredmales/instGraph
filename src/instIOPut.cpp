@@ -28,6 +28,7 @@ instIOPut::instIOPut( const instIOPut &iop )
     m_state = iop.m_state;
     m_key = iop.m_key;
     m_outputLinks = iop.m_outputLinks;
+    m_outputOffLinks = iop.m_outputOffLinks;
 }
 
 void instIOPut::setup( instNode *node, ioDir io, std::string name, putType type, instBeam *beam )
@@ -163,7 +164,9 @@ void instIOPut::state( putState ns, bool nobeam, bool byOutputLink )
     if( changed )
     {
         if( m_parentGraph )
+        {
             m_parentGraph->stateChange();
+        }
     }
 
     // If an input and it is linked, propagate to the linked outputs
@@ -177,6 +180,20 @@ void instIOPut::state( putState ns, bool nobeam, bool byOutputLink )
             }
 
             m_node->checkOutputLinks( oit );
+        }
+    }
+
+    // If an input and it is off-linked, and this is an off state, propagate to the linked outputs
+    if( m_io == ioDir::input && ns == putState::off && m_outputOffLinks.size() > 0 && m_node != nullptr )
+    {
+        for( auto &&oit : m_outputOffLinks )
+        {
+            if( !m_node->outputValid( oit ) )
+            {
+                throw std::logic_error( "instIOPut::state: outputLink is invalid" );
+            }
+
+            m_node->checkOutputLinks( oit ); //this will change the linked output to off/waiting
         }
     }
 
@@ -218,6 +235,28 @@ const std::set<std::string> &instIOPut::outputLinks()
     return m_outputLinks;
 }
 
+void instIOPut::outputOffLink( const std::string &ol )
+{
+    if( m_io != ioDir::input )
+    {
+        std::string msg = "attempt to add outputOffLink to output ";
+        msg += m_name + " " + ol + " (ingr::instIOPUt::outputOfflink ";
+        msg += __FILE__;
+        msg += " ";
+        msg += __LINE__;
+        msg += ")";
+
+        throw std::logic_error( msg );
+    }
+
+    m_outputOffLinks.insert( ol );
+}
+
+const std::set<std::string> &instIOPut::outputOffLinks()
+{
+    return m_outputOffLinks;
+}
+
 bool instIOPut::auxDataValid()
 {
     return ( m_auxData != nullptr );
@@ -241,7 +280,9 @@ void instIOPut::auxData( void *ad )
 void instIOPut::stateChange()
 {
     if( m_node == nullptr )
+    {
         return;
+    }
 
     m_node->stateChange();
 }

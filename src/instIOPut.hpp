@@ -61,10 +61,15 @@ class instIOPut
 
     std::string m_key; ///< The unique key to identify this ioput.
 
-    /** List of outputs on the same node which are downstream of this input.
+    /** List of outputs on the same node which are downstream of this input and controlled by it.
      * This are effectively internal beams. Used for inputs only.
      */
     std::set<std::string> m_outputLinks;
+
+    /** List of outputs on the same node which are downstream of this input and turned off by it.
+     * This are effectively internal beams. Used for inputs only.  Only turns off, does not turn on the outputs.
+     */
+    std::set<std::string> m_outputOffLinks;
 
     instGraph *m_parentGraph{ nullptr }; ///< Pointer to the parent instGraph that holds this beam
 
@@ -199,11 +204,23 @@ class instIOPut
      */
     void outputLink( const std::string &ol /**< [in] */ );
 
-    /// Get the set holding hte outputLinks
+    /// Get the set holding the outputLinks
     /**
-     * \returns a const reference to the m_outputLnks set
+     * \returns a const reference to the m_outputLinks set
      */
     const std::set<std::string> &outputLinks();
+
+    /// Add an output off link to this node (if it's an input)
+    /**
+     * \throws std::logic_error if this is an output node
+     */
+    void outputOffLink( const std::string &ol /**< [in] */ );
+
+    /// Get the set holding the outputOffLinks
+    /**
+     * \returns a const reference to the m_outputOffLinks set
+     */
+    const std::set<std::string> &outputOffLinks();
 
     /// Set the parent instGraph
     void parentGraph( instGraph *ig /**< [in] pointer to the parent instGraph */ );

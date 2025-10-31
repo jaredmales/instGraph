@@ -126,7 +126,7 @@ class instGraphXML : public instGraph
     struct guiData
     {
         static constexpr char m_defaultColor[] = "#FFFFFF";
-        static constexpr int m_defaultOpacity= 100;
+        static constexpr int m_defaultOpacity = 100;
 
         pugi::xml_node *xmlNode{ nullptr };
 
@@ -140,21 +140,25 @@ class instGraphXML : public instGraph
 
         attrCoord textOpacityPos;
 
-        guiData( pugi::xml_node *xn );
+        /// Construct from a pointer to an xml_node, taking ownership of the pointer
+        guiData( pugi::xml_node *xn /**< [in] Pointer to an xml_node to take ownership of*/ );
+
+        /// Construct from an xml_node, copying it.
+        guiData( const pugi::xml_node &xn /**< [in] An xml_node to copy*/ );
 
         ~guiData();
 
         void findColors();
 
-        void strokeColor( const std::string &color );
+        void strokeColor( const std::string &color /**< [in] */ );
 
-        void fontColor( const std::string &color );
+        void fontColor( const std::string &color /**< [in] */ );
 
-        void opacity( int op );
+        void opacity( int op /**< [in] */ );
 
-        void textOpacity( int op );
+        void textOpacity( int op /**< [in] */ );
 
-        void value( const std::string &val );
+        void value( const std::string &val /**< [in] */ );
 
         std::multimap<std::string, extraGuiData> extraData;
     };
@@ -185,9 +189,16 @@ class instGraphXML : public instGraph
     /// Hold the gui information for output links
     /** Output links aren't actual entities in basic instGraph, rather they are just pointers
      * from inputs to outputs.  But in the mxGraph XML they are entities that need to be managed
-     * wo we need to collect them.
+     * so we need to collect them.
      */
     std::map<std::string, std::shared_ptr<guiData>> m_outputLinks;
+
+    /// Hold the gui information for output off links
+    /** Output off links aren't actual entities in basic instGraph, rather they are just pointers
+     * from inputs to outputs.  But in the mxGraph XML they are entities that need to be managed
+     * so we need to collect them.
+     */
+    std::map<std::string, std::shared_ptr<guiData>> m_outputOffLinks;
 
   public:
     /// Default c'tor
@@ -211,7 +222,19 @@ class instGraphXML : public instGraph
 
     virtual void stateChange();
 
-    virtual void valuePut( const std::string &node, const std::string &put, const ioDir &dir, const std::string &val );
+    /// Set the value of a put
+    virtual void valuePut( const std::string &node, /**< [in] the name of the instNode whose put is being modified.*/
+                           const std::string &put,  /**< [in] the name of the put being modified.*/
+                           const ioDir &dir,        /**< [in] the direction of the put */
+                           const std::string &val   /**< [in] the new value to set */
+    );
+
+    /// Set the value attribute of an extra xml_node of an instNode.
+    virtual void
+    valueExtra( const std::string &node,  /**< [in] the name of the instNode whose extra is being modified.*/
+                const std::string &extra, /**< [in] the name of the extra xml_node being modified.*/
+                const std::string &val    /**< [in] the new value to set */
+    );
 
     virtual void hideLinks();
 

@@ -499,7 +499,7 @@ struct egData
     std::string name;
     std::string type;
     std::string payload;
-    pugi::xml_node *node;
+    pugi::xml_node *node {nullptr};
 };
 
 int instGraphXML::parseXMLDoc( std::string &emsg )
@@ -568,11 +568,11 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
             std::pair<nodeMapT::iterator, bool> nodeRes = m_nodes.emplace( name, newNode );
             ///\todo result check
 
-            guiData *gd = new guiData( &cell );
+            guiData *gd = new guiData( cell );
 
             newNode->auxData( gd );
         }
-        else if( value[0] == 'o' || value[0] == 'i' )
+        else if( (value[0] == 'o' && value[1] != 'f') || value[0] == 'i' )
         {
             ioDir dir;
             putType type;
@@ -599,7 +599,7 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
             newPut->parentGraph( this ); ///\todo we need a single way to do this all
 
             // pugi::xml_node * xn = new pugi::xml_node(cell);
-            guiData *gd = new guiData( &cell );
+            guiData *gd = new guiData( cell );
             newPut->auxData( gd );
         }
         else if( value[0] == 'b' )
@@ -699,11 +699,11 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
 
             newBeam->dest( m_nodes[inNode]->input( inName ) );
 
-            guiData *gd = new guiData( &cell );
+            guiData *gd = new guiData( cell );
             // pugi::xml_node * xn = new pugi::xml_node(cell);
             newBeam->auxData( gd );
         }
-        else if( value[0] == 'l' )
+        else if( value[0] == 'l' ) //a link
         {
             std::string name;
             std::string outNode;
@@ -729,7 +729,35 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
             }
             m_nodes[inNode]->input( inName )->outputLink( outName );
 
-            m_outputLinks.insert( std::pair( value, std::make_shared<guiData>( &cell ) ) );
+            m_outputLinks.insert( std::pair( value, std::make_shared<guiData>( cell ) ) );
+        }
+        else if( value[0] == 'o' && value[1] == 'f' ) //an off link
+        {
+            std::string name;
+            std::string outNode;
+            std::string outName;
+            std::string inNode;
+            std::string inName;
+
+            pugi::xml_attribute source = cell.attribute( "source" );
+            pugi::xml_attribute target = cell.attribute( "target" );
+
+            // note that when calling for a link instead of a beam we swap target and source
+            int ec = parseBeam( name, outNode, outName, inNode, inName, emsg, value, fc, target, source, "offlink" );
+
+            if( ec < 0 )
+            {
+                return ec;
+            }
+
+            if( outNode != inNode )
+            {
+                emsg = "output off link has different nodes for source and target ':'. (id=\"" + value + "\")";
+                return MXGPARSE_ERR_DOC_OLDN;
+            }
+            m_nodes[inNode]->input( inName )->outputOffLink( outName );
+
+            m_outputOffLinks.insert( std::pair( value, std::make_shared<guiData>( cell ) ) );
         }
         else if( fc != value.size() - 1 )
         {
@@ -753,7 +781,8 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
             extras.back().name = name;
             extras.back().type = type;
             extras.back().payload = payload;
-            extras.back().node = &cell;
+            extras.back().node = new pugi::xml_node(cell); //Construct
+
         }
     }
 
@@ -776,11 +805,11 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
     {
         if( m_nodes.count( extra.name ) > 0 )
         {
-            // std::cerr << "Found extra: " << extra.type << " for " << extra.name << " " << extra.payload << "\n";
+            //std::cerr << "Found extra: " << extra.type << " for " << extra.name << ": " << extra.payload << "\n";
 
             if( !m_nodes[extra.name]->auxDataValid() )
             {
-                std::cerr << "not valid auxData for " << extra.name << "\n";
+                std::cerr << "no valid auxData for " << extra.name << "\n";
                 continue;
             }
             guiData *gd = static_cast<guiData *>( m_nodes[extra.name]->auxData() );
@@ -794,6 +823,8 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
         else
         {
             std::cerr << "No node for extra: " << extra.type << " for " << extra.name << " " << extra.payload << "\n";
+
+            delete extra.node;
         }
     }
     return 0;
@@ -952,9 +983,55 @@ void instGraphXML::valuePut( const std::string &node, const std::string &put, co
     m_doc->save_file( m_outputPath.c_str() );
 }
 
+void instGraphXML::valueExtra( const std::string &node, const std::string &extra, const std::string &val )
+{
+    if( !m_nodes.count( node ) == 1 )
+    {
+        return;
+    }
+
+    instNode *nptr;
+
+    try
+    {
+        nptr = instGraph::node( node );
+    }
+    catch( ... )
+    {
+        return;
+    }
+
+    if( !nptr->auxDataValid() )
+    {
+        return;
+    }
+
+    auxDataT * ad = static_cast<auxDataT *>( nptr->auxData() );
+
+    if(ad->extraData.count(extra) == 0)
+    {
+        return;
+    }
+
+    auto edL = ad->extraData.lower_bound(extra);
+    auto edU = ad->extraData.upper_bound(extra);
+    while(edL != edU)
+    {
+        edL->second.gdata->value( val );
+        ++edL;
+    }
+
+    m_doc->save_file( m_outputPath.c_str() );
+}
+
 void instGraphXML::hideLinks()
 {
     for( auto &lit : m_outputLinks )
+    {
+        lit.second->opacity( 0 );
+    }
+
+    for( auto &lit : m_outputOffLinks )
     {
         lit.second->opacity( 0 );
     }
@@ -991,7 +1068,13 @@ void instGraphXML::hidePuts()
 
 instGraphXML::guiData::guiData( pugi::xml_node *xn )
 {
-    xmlNode = new pugi::xml_node( *xn );
+    xmlNode = xn;
+    findColors();
+}
+
+instGraphXML::guiData::guiData( const pugi::xml_node &xn )
+{
+    xmlNode = new pugi::xml_node( xn );
     findColors();
 }
 

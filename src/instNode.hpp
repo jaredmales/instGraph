@@ -33,7 +33,7 @@ struct instNode
 
     ioputMapT m_outputs;        ///< Map of the outputs
 
-    void *m_auxData{ nullptr }; ///< Auxilliary data for this node, i.e. for GUI support.
+    void *m_auxData{ nullptr }; ///< Auxiliary data for this node, i.e. for GUI support.
 
   public:
     /// Default c'tor
