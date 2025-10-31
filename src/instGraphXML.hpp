@@ -193,13 +193,6 @@ class instGraphXML : public instGraph
      */
     std::map<std::string, std::shared_ptr<guiData>> m_outputLinks;
 
-    /// Hold the gui information for output off links
-    /** Output off links aren't actual entities in basic instGraph, rather they are just pointers
-     * from inputs to outputs.  But in the mxGraph XML they are entities that need to be managed
-     * so we need to collect them.
-     */
-    std::map<std::string, std::shared_ptr<guiData>> m_outputOffLinks;
-
   public:
     /// Default c'tor
     instGraphXML();

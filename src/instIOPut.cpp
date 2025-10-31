@@ -28,7 +28,6 @@ instIOPut::instIOPut( const instIOPut &iop )
     m_state = iop.m_state;
     m_key = iop.m_key;
     m_outputLinks = iop.m_outputLinks;
-    m_outputOffLinks = iop.m_outputOffLinks;
 }
 
 void instIOPut::setup( instNode *node, ioDir io, std::string name, putType type, instBeam *beam )
@@ -132,6 +131,12 @@ putState instIOPut::state() const
 
 void instIOPut::state( putState ns, bool nobeam, bool byOutputLink )
 {
+    // If this put is not enabled we can't do anything but turn it off
+    if(!m_enabled && ns != putState::off)
+    {
+        return;
+    }
+
     // If this is an input and switching on, check if beam is off
     // because otherwise we won't get to waiting
     if( m_io == ioDir::input && ns == putState::on )
@@ -146,9 +151,12 @@ void instIOPut::state( putState ns, bool nobeam, bool byOutputLink )
     }
 
     // If this is an output and it is output-linked from an input and this is not being set
-    // by that output link, we do nothing.
-    if( m_io == ioDir::output && m_outputLinked == true && byOutputLink == false )
+    // by that output link, we do nothing direct unless it is not enabled (in which case we make sure it's
+    // off).  Output links for this output are checked to verify status.
+    if( m_io == ioDir::output && m_outputLinked == true && byOutputLink == false && m_enabled )
     {
+        m_node->checkOutputLinks( m_name );
+
         return;
     }
 
@@ -183,24 +191,20 @@ void instIOPut::state( putState ns, bool nobeam, bool byOutputLink )
         }
     }
 
-    // If an input and it is off-linked, and this is an off state, propagate to the linked outputs
-    if( m_io == ioDir::input && ns == putState::off && m_outputOffLinks.size() > 0 && m_node != nullptr )
-    {
-        for( auto &&oit : m_outputOffLinks )
-        {
-            if( !m_node->outputValid( oit ) )
-            {
-                throw std::logic_error( "instIOPut::state: outputLink is invalid" );
-            }
-
-            m_node->checkOutputLinks( oit ); //this will change the linked output to off/waiting
-        }
-    }
-
     if( m_beam != nullptr && !nobeam )
     {
         m_beam->stateChange();
     }
+}
+
+bool instIOPut::enabled() const
+{
+    return m_enabled;
+}
+
+void instIOPut::enabled(bool en)
+{
+    m_enabled = en;
 }
 
 void instIOPut::parentGraph( instGraph *ig )
@@ -221,7 +225,7 @@ void instIOPut::outputLink( const std::string &ol )
         msg += m_name + " " + ol + " (ingr::instIOPUt::outputlink ";
         msg += __FILE__;
         msg += " ";
-        msg += __LINE__;
+        msg += std::to_string(__LINE__);
         msg += ")";
 
         throw std::logic_error( msg );
@@ -233,28 +237,6 @@ void instIOPut::outputLink( const std::string &ol )
 const std::set<std::string> &instIOPut::outputLinks()
 {
     return m_outputLinks;
-}
-
-void instIOPut::outputOffLink( const std::string &ol )
-{
-    if( m_io != ioDir::input )
-    {
-        std::string msg = "attempt to add outputOffLink to output ";
-        msg += m_name + " " + ol + " (ingr::instIOPUt::outputOfflink ";
-        msg += __FILE__;
-        msg += " ";
-        msg += __LINE__;
-        msg += ")";
-
-        throw std::logic_error( msg );
-    }
-
-    m_outputOffLinks.insert( ol );
-}
-
-const std::set<std::string> &instIOPut::outputOffLinks()
-{
-    return m_outputOffLinks;
 }
 
 bool instIOPut::auxDataValid()

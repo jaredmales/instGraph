@@ -572,7 +572,7 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
 
             newNode->auxData( gd );
         }
-        else if( (value[0] == 'o' && value[1] != 'f') || value[0] == 'i' )
+        else if( value[0] == 'o' || value[0] == 'i' )
         {
             ioDir dir;
             putType type;
@@ -730,34 +730,6 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
             m_nodes[inNode]->input( inName )->outputLink( outName );
 
             m_outputLinks.insert( std::pair( value, std::make_shared<guiData>( cell ) ) );
-        }
-        else if( value[0] == 'o' && value[1] == 'f' ) //an off link
-        {
-            std::string name;
-            std::string outNode;
-            std::string outName;
-            std::string inNode;
-            std::string inName;
-
-            pugi::xml_attribute source = cell.attribute( "source" );
-            pugi::xml_attribute target = cell.attribute( "target" );
-
-            // note that when calling for a link instead of a beam we swap target and source
-            int ec = parseBeam( name, outNode, outName, inNode, inName, emsg, value, fc, target, source, "offlink" );
-
-            if( ec < 0 )
-            {
-                return ec;
-            }
-
-            if( outNode != inNode )
-            {
-                emsg = "output off link has different nodes for source and target ':'. (id=\"" + value + "\")";
-                return MXGPARSE_ERR_DOC_OLDN;
-            }
-            m_nodes[inNode]->input( inName )->outputOffLink( outName );
-
-            m_outputOffLinks.insert( std::pair( value, std::make_shared<guiData>( cell ) ) );
         }
         else if( fc != value.size() - 1 )
         {
@@ -1027,11 +999,6 @@ void instGraphXML::valueExtra( const std::string &node, const std::string &extra
 void instGraphXML::hideLinks()
 {
     for( auto &lit : m_outputLinks )
-    {
-        lit.second->opacity( 0 );
-    }
-
-    for( auto &lit : m_outputOffLinks )
     {
         lit.second->opacity( 0 );
     }

@@ -136,7 +136,7 @@ struct instNode
      * via an output link when it should be `on` due to a different output link.  Called
      * from within instIOPut::state.
      *
-     * \todo hould upgrade outputLinks to hold both the input and output to make this faster.
+     * \todo should upgrade outputLinks to hold both the input and output to make this faster.
      */
     void checkOutputLinks( const std::string op /**< [in] the output to check outputLinks for */ );
 
