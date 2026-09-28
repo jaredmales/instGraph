@@ -12,3 +12,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -std=c++20")
 #######################################################################
 add_subdirectory(src)
 
+
+option(INSTGRAPH_BUILD_TESTS "Build instGraph Catch2 tests" OFF)
+if(INSTGRAPH_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

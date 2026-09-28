@@ -3,7 +3,7 @@
   * Explanation of the concepts.
   */
 
-  
+
 /** \defgroup nodes Nodes
   * Description of nodes and inputs and outputs
   */
@@ -14,15 +14,22 @@
   */
 
 /** \defgroup basic_types The Basic Types In An Instrument Graph
-  * 
+  *
   */
 
 /* --------------------------  Nodes ------------------------------------------------ */
 
-/** \defgroup puts IOPuts: node inputs and outputs 
+/** \defgroup puts IOPuts: node inputs and outputs
   * Description of inputs to and outputs from nodes
   *
   * \ingroup nodes
   */
 
-  
+
+/** \defgroup unit_tests Unit Tests
+ * \ingroup explainer
+ */
+
+/** \defgroup instGraphXML_unit_tests instGraphXML Unit Tests
+ * \ingroup unit_tests
+ */

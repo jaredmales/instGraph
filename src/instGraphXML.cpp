@@ -1,4 +1,12 @@
+/** \file instGraphXML.cpp
+ * \brief Draw.io XML parsing, state updates, and serialization.
+ *
+ * \ingroup explainer
+ */
+
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 #include <vector>
 
 #include "instGraphXML.hpp"
@@ -499,7 +507,7 @@ struct egData
     std::string name;
     std::string type;
     std::string payload;
-    pugi::xml_node *node {nullptr};
+    pugi::xml_node *node{ nullptr };
 };
 
 int instGraphXML::parseXMLDoc( std::string &emsg )
@@ -703,7 +711,7 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
             // pugi::xml_node * xn = new pugi::xml_node(cell);
             newBeam->auxData( gd );
         }
-        else if( value[0] == 'l' ) //a link
+        else if( value[0] == 'l' ) // a link
         {
             std::string name;
             std::string outNode;
@@ -753,8 +761,7 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
             extras.back().name = name;
             extras.back().type = type;
             extras.back().payload = payload;
-            extras.back().node = new pugi::xml_node(cell); //Construct
-
+            extras.back().node = new pugi::xml_node( cell ); // Construct
         }
     }
 
@@ -777,7 +784,7 @@ int instGraphXML::parseXMLDoc( std::string &emsg )
     {
         if( m_nodes.count( extra.name ) > 0 )
         {
-            //std::cerr << "Found extra: " << extra.type << " for " << extra.name << ": " << extra.payload << "\n";
+            // std::cerr << "Found extra: " << extra.type << " for " << extra.name << ": " << extra.payload << "\n";
 
             if( !m_nodes[extra.name]->auxDataValid() )
             {
@@ -828,6 +835,49 @@ const std::string &instGraphXML::outputPath()
 void instGraphXML::outputPath( const std::string &op )
 {
     m_outputPath = op;
+}
+
+void instGraphXML::autoSave( bool enabled )
+{
+    m_autoSave = enabled;
+}
+
+int instGraphXML::serializeXML( std::string &xml, std::string &error ) const
+{
+    xml.clear();
+    error.clear();
+    try
+    {
+        std::ostringstream stream;
+        m_doc->save( stream );
+        if( !stream.good() )
+        {
+            error = "could not serialize instrument graph XML";
+            return -1;
+        }
+
+        xml = stream.str();
+        if( xml.empty() )
+        {
+            error = "serialized instrument graph XML is empty";
+            return -1;
+        }
+    }
+    catch( const std::exception &e )
+    {
+        error = std::string( "could not serialize instrument graph XML: " ) + e.what();
+        return -1;
+    }
+
+    return 0;
+}
+
+void instGraphXML::saveCurrentFile()
+{
+    if( !m_doc->save_file( m_outputPath.c_str() ) )
+    {
+        throw std::runtime_error( "could not save instrument graph XML to " + m_outputPath );
+    }
 }
 
 void instGraphXML::stateChange()
@@ -906,7 +956,10 @@ void instGraphXML::stateChange()
         }
     }
 
-    m_doc->save_file( m_outputPath.c_str() );
+    if( m_autoSave )
+    {
+        saveCurrentFile();
+    }
 }
 
 ///\todo make this use ioDIR
@@ -952,7 +1005,10 @@ void instGraphXML::valuePut( const std::string &node, const std::string &put, co
 
     static_cast<auxDataT *>( pptr->auxData() )->value( val );
 
-    m_doc->save_file( m_outputPath.c_str() );
+    if( m_autoSave )
+    {
+        saveCurrentFile();
+    }
 }
 
 void instGraphXML::valueExtra( const std::string &node, const std::string &extra, const std::string &val )
@@ -978,22 +1034,25 @@ void instGraphXML::valueExtra( const std::string &node, const std::string &extra
         return;
     }
 
-    auxDataT * ad = static_cast<auxDataT *>( nptr->auxData() );
+    auxDataT *ad = static_cast<auxDataT *>( nptr->auxData() );
 
-    if(ad->extraData.count(extra) == 0)
+    if( ad->extraData.count( extra ) == 0 )
     {
         return;
     }
 
-    auto edL = ad->extraData.lower_bound(extra);
-    auto edU = ad->extraData.upper_bound(extra);
-    while(edL != edU)
+    auto edL = ad->extraData.lower_bound( extra );
+    auto edU = ad->extraData.upper_bound( extra );
+    while( edL != edU )
     {
         edL->second.gdata->value( val );
         ++edL;
     }
 
-    m_doc->save_file( m_outputPath.c_str() );
+    if( m_autoSave )
+    {
+        saveCurrentFile();
+    }
 }
 
 void instGraphXML::hideLinks()
@@ -1105,7 +1164,7 @@ void instGraphXML::guiData::strokeColor( const std::string &color )
     // Add it if it doesn't exist
     if( strokeColorPos.keyPos == std::string::npos )
     {
-        styleValue += std::string("strokeColor=") + m_defaultColor + ";";
+        styleValue += std::string( "strokeColor=" ) + m_defaultColor + ";";
         style.set_value( styleValue.c_str() );
         findColors();
 
@@ -1145,7 +1204,7 @@ void instGraphXML::guiData::fontColor( const std::string &color )
     // Add it if it doesn't exist
     if( fontColorPos.keyPos == std::string::npos )
     {
-        styleValue += std::string("fontColor=") + m_defaultColor + ";";
+        styleValue += std::string( "fontColor=" ) + m_defaultColor + ";";
         style.set_value( styleValue.c_str() );
         findColors();
 

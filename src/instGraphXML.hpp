@@ -1,3 +1,9 @@
+/** \file instGraphXML.hpp
+ * \brief Draw.io XML representation of an instrument graph.
+ *
+ * \ingroup explainer
+ */
+
 #ifndef instGraphXML_hpp
 #define instGraphXML_hpp
 
@@ -184,7 +190,13 @@ class instGraphXML : public instGraph
     std::string m_colorOn{ "#00FF00" };
     std::string m_colorInt{ "#FFFF00" };
 
-    std::string m_outputPath{ "tmp.drawio" }; ///< The output file path for writing updated drawio xml.
+    std::string m_outputPath{ "tmp.drawio" }; ///< The output file path for automatic saves.
+
+    /// Whether mutations automatically save the graph to m_outputPath.
+    bool m_autoSave{ true };
+
+    /// Save to the configured path, throwing if the write fails.
+    void saveCurrentFile();
 
     /// Hold the gui information for output links
     /** Output links aren't actual entities in basic instGraph, rather they are just pointers
@@ -213,6 +225,15 @@ class instGraphXML : public instGraph
     /// Set the output file path for writing updated drawio xml
     void outputPath( const std::string &op /**< [in] the new output path */ );
 
+    /// Enable or disable automatic saves after graph mutations.
+    void autoSave( bool enabled /**< [in] whether mutations save to outputPath() */ );
+
+    /// Serialize the current XML without writing a file.
+    /** \returns 0 on success, -1 with an explanation in error on failure. */
+    int serializeXML( std::string &xml, /**< [out] complete XML document */
+                      std::string &error /**< [out] failure description */ ) const;
+
+    /// Refresh GUI colors from graph state and save when automatic saves are enabled.
     virtual void stateChange();
 
     /// Set the value of a put
@@ -229,8 +250,10 @@ class instGraphXML : public instGraph
                 const std::string &val    /**< [in] the new value to set */
     );
 
+    /// Hide all internal output links in the XML.
     virtual void hideLinks();
 
+    /// Hide all input and output puts in the XML.
     virtual void hidePuts();
 
 }; // class instGraphXML
