@@ -1,0 +1,3 @@
+#!/bin/sh
+set -eu
+cmake --build _build --target coverage

@@ -33,3 +33,7 @@
 /** \defgroup instGraphXML_unit_tests instGraphXML Unit Tests
  * \ingroup unit_tests
  */
+
+/** \defgroup instGraph_coverage Coverage Report
+ * \ingroup unit_tests
+ */

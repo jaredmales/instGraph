@@ -1,0 +1,24 @@
+/** \addtogroup instGraph_coverage
+ * @{
+ *
+ * The coverage target builds instGraph with GCC counters, captures a zero-count
+ * baseline, runs the Catch2 tests through CTest, and includes untested compiled
+ * lines in the report. The report covers instGraph sources under \c src/ and
+ * excludes bundled pugixml and toml++ code.
+ *
+ * \htmlonly
+ * <style>
+ * .contents, .textblock { max-width: none !important; width: 100% !important; }
+ * .instgraph-coverage-embed {
+ *   display: block;
+ *   width: 100%;
+ *   height: calc(100vh - 220px);
+ *   min-height: 700px;
+ *   border: 1px solid var(--separator-color, #d4d4d4);
+ * }
+ * </style>
+ * <iframe class="instgraph-coverage-embed" src="coverage/index.html" title="instGraph coverage report"></iframe>
+ * \endhtmlonly
+ *
+ * @}
+ */

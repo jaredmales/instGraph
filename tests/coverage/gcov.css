@@ -1,0 +1,57 @@
+/* Match coverage pages to the instGraph Doxygen theme. */
+@import url("../doxygen.css");
+@import url("../tabs.css");
+@import url("../doxygen-awesome.css");
+@import url("../doxygen-awesome-sidebar-only.css");
+
+body {
+  margin: 0;
+  padding: 1rem;
+}
+
+body > table:first-child,
+body > center > table {
+  width: min(1400px, 100%);
+  margin: 0 auto;
+}
+
+th,
+td {
+  padding: 0.3rem 0.45rem;
+}
+
+.source,
+.source a {
+  font-family: var(--font-family-monospace, monospace);
+  font-size: 0.92rem;
+}
+
+td.lineCov,
+span.lineCov,
+td.tlaGNC,
+span.tlaGNC,
+a.tlaGNC {
+  background-color: #1a4f78 !important;
+}
+
+td.lineNoCov,
+span.lineNoCov,
+td.tlaUNC,
+span.tlaUNC,
+a.tlaUNC {
+  background-color: #5a2222 !important;
+}
+
+.source,
+.source * {
+  color: var(--page-foreground-color, #d2dbde) !important;
+}
+
+.lineNum {
+  color: var(--page-secondary-foreground-color, #9aa6ad) !important;
+}
+
+td.coverBar > table {
+  background: transparent;
+  border: 0;
+}
