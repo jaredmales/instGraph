@@ -6,6 +6,7 @@
 
 #include "../catch2/catch.hpp"
 
+#include <array>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -55,6 +56,46 @@ void writeGraph( const std::filesystem::path &path )
 
 namespace unitTest::instGraphXMLTest
 {
+
+/// Typed input and output IDs select the requested put type.
+/** \ingroup instGraphXML_unit_tests
+ */
+TEST_CASE( "Typed put IDs retain direction and type", "[instGraphXML]" )
+{
+    temporaryDirectory temp;
+    const auto input = temp.path / "typed.drawio";
+    const std::array<std::pair<const char *, ingr::putType>, 5> types{ {
+        { "light", ingr::putType::light },
+        { "data", ingr::putType::data },
+        { "power", ingr::putType::power },
+        { "mechanical", ingr::putType::mechanical },
+        { "fluid", ingr::putType::fluid },
+    } };
+    {
+        std::ofstream out( input );
+        out << "<mxfile><diagram><mxGraphModel><root>"
+               "<mxCell id=\"0\"/><mxCell id=\"1\" parent=\"0\"/>"
+               "<mxCell id=\"node:test\"/>";
+        for( const auto &[name, type] : types )
+        {
+            static_cast<void>( type );
+            out << "<mxCell id=\"input." << name << ":test:in_" << name << "\"/>";
+            out << "<mxCell id=\"output." << name << ":test:out_" << name << "\"/>";
+        }
+        out << "</root></mxGraphModel></diagram></mxfile>";
+    }
+
+    ingr::instGraphXML graph;
+    std::string error;
+    REQUIRE( graph.loadXMLFile( error, input.string() ) == 0 );
+    auto *node = graph.node( "test" );
+    for( const auto &[name, type] : types )
+    {
+        CAPTURE( name );
+        REQUIRE( node->input( std::string( "in_" ) + name )->type() == type );
+        REQUIRE( node->output( std::string( "out_" ) + name )->type() == type );
+    }
+}
 
 /// Disabled automatic saves retain mutations for explicit serialization
 /**

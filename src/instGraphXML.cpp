@@ -88,7 +88,7 @@ int parsePut( ioDir &dir,
     size_t tc = std::string::npos; // type marker
     if( fc > 1 )
     {
-        tc = value.rfind( fc, '.' );
+        tc = value.rfind( '.', fc );
         if( tc != std::string::npos )
         {
             tfc = tc;
@@ -207,7 +207,7 @@ int parsePut( ioDir &dir,
         {
             if( fc - tc == 5 )
             {
-                if( value.substr( tc, 4 ) != "power" )
+                if( value.substr( tc, 5 ) != "power" )
                 {
                     emsg = "mxCell id 'type' parse error, power not found (id=\"" + value + "\")";
                     return MXGPARSE_ERR_PUT_POWERNF;
@@ -225,7 +225,7 @@ int parsePut( ioDir &dir,
         {
             if( fc - tc == 10 )
             {
-                if( value.substr( tc, 4 ) != "mechanical" )
+                if( value.substr( tc, 10 ) != "mechanical" )
                 {
                     emsg = "mxCell id 'type' parse error, mechanical not found (id=\"" + value + "\")";
                     return MXGPARSE_ERR_PUT_MECHNF;
@@ -243,7 +243,7 @@ int parsePut( ioDir &dir,
         {
             if( fc - tc == 5 )
             {
-                if( value.substr( tc, 4 ) != "fluid" )
+                if( value.substr( tc, 5 ) != "fluid" )
                 {
                     emsg = "mxCell id 'type' parse error, fluid not found (id=\"" + value + "\")";
                     return MXGPARSE_ERR_PUT_FLUIDNF;
